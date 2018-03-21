@@ -1,4 +1,5 @@
-{:deps {org.clojure/clojure {:mvn/version "1.9.0"}}
+{:deps {org.clojure/clojure {:mvn/version "1.9.0"}
+        org.clojure/tools.deps.alpha {:mvn/version "0.5.410"}}
  :aliases {:dev {:extra-paths ["dev"]
                  :extra-deps {org.clojure/tools.nrepl {:mvn/version "0.2.12"}
                               cider/cider-nrepl {:mvn/version "0.17.0-SNAPSHOT"}}
