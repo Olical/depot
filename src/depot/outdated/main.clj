@@ -1,9 +1,11 @@
 (ns depot.outdated.main
-  (:require [clojure.tools.deps.alpha :as deps]
+  (:require [clojure.set :as set]
+            [clojure.string :as str]
+            [clojure.tools.cli :as cli]
+            [clojure.tools.deps.alpha :as deps]
             [clojure.tools.deps.alpha.reader :as reader]
             [clojure.tools.deps.alpha.util.maven :as maven]
-            [version-clj.core :as version]
-            [clojure.set :as set])
+            [version-clj.core :as version])
   (:import [org.eclipse.aether.resolution VersionRangeRequest]))
 
 (def version-types #{:snapshot :qualified :release})
@@ -35,17 +37,13 @@
      :types (group-by version-type versions)}))
 
 (defn find-latest [types consider-types]
-  (when-not (set/subset? consider-types version-types)
-    (throw (Error. (str "Unrecognised version types "
-                        (set/difference consider-types version-types)
-                        " must be subset of " version-types))))
   (let [versions (->> (select-keys types consider-types)
                       (vals)
                       (apply concat))]
     (-> (sort version/version-compare versions)
         (last))))
 
-(defn show-outdated! [consider-types aliases]
+(defn print-outdated [consider-types aliases]
   (let [deps-map (-> (reader/clojure-env)
                      (:config-files)
                      (reader/read-deps))
@@ -60,6 +58,30 @@
         (when (= (version/version-compare latest selected) 1)
           (println (str lib ":") selected "=>" latest))))))
 
+(defn comma-str->keywords-set [comma-str]
+  (into #{} (map keyword) (str/split comma-str #",")))
+
+(defn keywords-set->comma-str [kws]
+  (str/join "," (map name kws)))
+
+(def version-types-str (keywords-set->comma-str version-types))
+
+(def cli-options
+  [["-a" "--aliases ALIASES" "Comma list of aliases to use when reading deps.edn"
+    :default #{}
+    :default-desc ""
+    :parse-fn comma-str->keywords-set]
+   ["-t" "--consider-types TYPES" (str "Comma list of version types to consider out of " version-types-str)
+    :default #{:release}
+    :default-desc "release"
+    :parse-fn comma-str->keywords-set
+    :validate [#(set/subset? % version-types) (str "Must be subset of " version-types)]]
+   ["-h" "--help"]])
+
 (defn -main [& args]
-  (show-outdated! #{:release :qualified} #{:test})
-  (shutdown-agents))
+  (let [{{:keys [aliases consider-types help]} :options
+         summary :summary} (cli/parse-opts args cli-options)]
+    (if help
+      (println summary)
+      (print-outdated consider-types aliases))
+    (shutdown-agents)))
