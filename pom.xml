@@ -52,4 +52,11 @@
       <url>https://clojars.org/repo</url>
     </repository>
   </repositories>
+  <distributionManagement>
+    <repository>
+      <id>clojars</id>
+      <name>Clojars repository</name>
+      <url>https://clojars.org/repo</url>
+    </repository>
+  </distributionManagement>
 </project>
