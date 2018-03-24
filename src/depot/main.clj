@@ -46,4 +46,4 @@
           latest (-> versions :release last)
           selected (-> versions :selected)]
       (when (= (version/version-compare latest selected) 1)
-        (println lib (str "(" selected ")") "can be updated to" latest)))))
+        (println (str lib ":") selected "=>" latest)))))
