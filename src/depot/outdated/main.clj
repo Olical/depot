@@ -2,8 +2,11 @@
   (:require [clojure.tools.deps.alpha :as deps]
             [clojure.tools.deps.alpha.reader :as reader]
             [clojure.tools.deps.alpha.util.maven :as maven]
-            [version-clj.core :as version])
+            [version-clj.core :as version]
+            [clojure.set :as set])
   (:import [org.eclipse.aether.resolution VersionRangeRequest]))
+
+(def version-types #{:snapshot :qualified :release})
 
 (defn version-type [v]
   (let [type (-> (version/version->seq v)
@@ -32,6 +35,10 @@
      :types (group-by version-type versions)}))
 
 (defn find-latest [types consider-types]
+  (when-not (set/subset? consider-types version-types)
+    (throw (Error. (str "Unrecognised version types "
+                        (set/difference consider-types version-types)
+                        " must be subset of " version-types))))
   (let [versions (->> (select-keys types consider-types)
                       (vals)
                       (apply concat))]
