@@ -1,24 +1,35 @@
 # Depot [![Clojars Project](https://img.shields.io/clojars/v/olical/depot.svg)](https://clojars.org/olical/depot)
 
-Find newer versions of your dependencies in your `deps.edn` file.
+Find newer versions of your dependencies in your `deps.edn` file using the [Clojure CLI][cli].
 
 ## Usage
 
 You can try it out easily with this one liner:
 
 ```bash
-$ clojure -Sdeps '{:deps {olical/depot {:mvn/version "1.0.0"}}}' -m depot.outdated.main --consider-types release,qualified --aliases test
-org.clojure/clojure: 1.9.0 => 1.10.0-alpha4
-clj-time/clj-time: 0.13.0 => 0.14.2
+$ clojure -Sdeps '{:deps {olical/depot {:mvn/version "1.0.0"}}}' -m depot.outdated.main
+org.clojure/clojure: 1.8.0 => 1.9.0
 ```
 
-This will check for any new release or qualified (alpha, beta etc) versions in your base deps with the test alias applied on top. Use `--help` to see more information on the arguments.
+You can add the following to your `deps.edn` (or `~/.clojure/deps.edn`) to make calling it slightly easier:
 
-You may want to add this dependency and the `-m depot.outdated.main` argument to your `~/.clojure/deps.edn` file for convenience.
+```clojure
+{:aliases {:outdated {:extra-deps {olical/depot {:mvn/version "1.0.0"}}
+                      :main-opts ["-m" "depot.outdated.main"]}}}
+```
+
+Now you may execute the namespace with a smaller command:
+
+```bash
+$ clojure -Aoutdated --help
+  -a, --aliases ALIASES                Comma list of aliases to use when reading deps.edn
+  -t, --consider-types TYPES  release  Comma list of version types to consider out of qualified,release,snapshot
+  -h, --help
+```
 
 ## Existing work
 
-This project is inspired by [lein-ancient][], it actually relies on [version-clj][] (by the same author, [xsc][]) for parsing and comparison of version numbers.
+This project is inspired by [lein-ancient][], it relies on [version-clj][] (by the same author, [xsc][]) for parsing and comparison of version numbers.
 
 ## Ideas?
 
@@ -44,3 +55,4 @@ Do what you want. Learn as much as you can. Unlicense more software.
 [lein-ancient]: https://github.com/xsc/lein-ancient
 [version-clj]: https://github.com/xsc/version-clj
 [xsc]: https://github.com/xsc
+[cli]: https://clojure.org/guides/deps_and_cli
