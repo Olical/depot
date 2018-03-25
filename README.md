@@ -11,7 +11,7 @@ $ clojure -Sdeps '{:deps {olical/depot {:mvn/version "1.0.0"}}}' -m depot.outdat
 org.clojure/clojure: 1.8.0 => 1.9.0
 ```
 
-You can add the following alias to your `deps.edn`, or `~/.clojure/deps.edn`:
+You can add the following alias to your `deps.edn`:
 
 ```clojure
 {:aliases {:outdated {:extra-deps {olical/depot {:mvn/version "1.0.0"}}
