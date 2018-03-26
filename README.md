@@ -30,15 +30,13 @@ olical/depot: ... => ...
 
 This project is inspired by [lein-ancient][], it relies on [version-clj][] (by the same author, [xsc][]) for parsing and comparison of version numbers.
 
-## Ideas?
+## Ideas
 
 This is a very young project and as such it's ripe for new features, feel free to suggest them! Things I would like to do:
 
- * More options to configure which `deps.edn` file to check.
  * Git support.
- * Automatically rewriting your `deps.edn` file.
- * General `deps.edn` manipulation like npm. `depot add some-awesome-dependency` for example.
- * Searching Clojars and adding the ones you want, like Arch Linux's pacman.
+ * Searching for dependencies.
+ * `deps.edn` manipulation like npm with `package.json`.
 
 ## Unlicenced
 
