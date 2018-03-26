@@ -32,9 +32,8 @@ This project is inspired by [lein-ancient][], it relies on [version-clj][] (by t
 
 ## Ideas
 
-This is a very young project and as such it's ripe for new features, feel free to suggest them! Things I would like to do:
+Here's a few things I'd like to add some day, feel free to discuss or suggest more:
 
- * Git support.
  * Searching for dependencies.
  * `deps.edn` manipulation like npm with `package.json`.
 
