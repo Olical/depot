@@ -11,20 +11,19 @@ $ clojure -Sdeps '{:deps {olical/depot {:mvn/version "1.0.0"}}}' -m depot.outdat
 org.clojure/clojure: 1.8.0 => 1.9.0
 ```
 
-You can add the following alias to your `deps.edn`:
+I'd recommend adding depot as an alias in your own `deps.edn` file, this will allow it to check itself for updates:
+
+> Note: Replace the ellipsis with the current version shown above.
 
 ```clojure
-{:aliases {:outdated {:extra-deps {olical/depot {:mvn/version "1.0.0"}}
+{:deps {}
+ :aliases {:outdated {:extra-deps {olical/depot {:mvn/version "..."}}
                       :main-opts ["-m" "depot.outdated.main"]}}}
 ```
 
-Now you may execute the namespace with a smaller command:
-
 ```bash
-$ clojure -Aoutdated --help
-  -a, --aliases ALIASES                Comma list of aliases to use when reading deps.edn
-  -t, --consider-types TYPES  release  Comma list of version types to consider out of qualified,release,snapshot
-  -h, --help
+$ clojure -Aoutdated -a outdated
+olical/depot: ... => ...
 ```
 
 ## Existing work
