@@ -25,7 +25,7 @@
     <dependency>
       <groupId>org.clojure</groupId>
       <artifactId>tools.deps.alpha</artifactId>
-      <version>0.5.410</version>
+      <version>0.5.417</version>
     </dependency>
     <dependency>
       <groupId>org.clojure</groupId>
