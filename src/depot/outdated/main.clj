@@ -49,9 +49,10 @@
                      (reader/read-deps))
         args-map (deps/combine-aliases deps-map aliases)
         resolved-universe (deps/resolve-deps deps-map args-map)
-        direct-deps (keys (merge (:deps deps-map) (:extra-deps args-map)))
-        resolved-local (select-keys resolved-universe direct-deps)]
-    (doseq [[lib coord] resolved-local]
+        direct-deps (->> (merge (:deps deps-map) (:extra-deps args-map))
+                         (filter (comp :mvn/version val))
+                         (map first))]
+    (doseq [[lib coord] (select-keys resolved-universe direct-deps)]
       (let [versions (coord->version-status lib coord deps-map)
             latest (find-latest (:types versions) consider-types)
             selected (-> versions :selected)]

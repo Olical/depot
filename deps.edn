@@ -6,4 +6,6 @@
                  :extra-deps {org.clojure/tools.nrepl {:mvn/version "0.2.12"}
                               cider/cider-nrepl {:mvn/version "0.17.0-SNAPSHOT"}}
                  :main-opts ["-m" "depot.dev.cider"]}
-           :test {:extra-deps {clj-time {:mvn/version "0.13.0"}}}}}
+           :test {:extra-deps {clj-time {:mvn/version "0.13.0"}
+                               olical/cljs-test-runner {:git/url "https://github.com/Olical/cljs-test-runner.git"
+                                                        :sha "5a18d41648d5c3a64632b5fec07734d32cca7671"}}}}}
