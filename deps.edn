@@ -3,7 +3,7 @@
         org.clojure/tools.cli {:mvn/version "0.3.5"}
         version-clj {:mvn/version "0.1.2"}}
  :aliases {:dev {:extra-paths ["dev"]
-                 :extra-deps {org.clojure/tools.nrepl {:mvn/version "0.2.12"}
+                 :extra-deps {org.clojure/tools.nrepl {:mvn/version "0.2.13"}
                               cider/cider-nrepl {:mvn/version "0.17.0-SNAPSHOT"}}
                  :main-opts ["-m" "depot.dev.cider"]}
            :test {:extra-deps {clj-time {:mvn/version "0.13.0"}
