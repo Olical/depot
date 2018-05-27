@@ -18,7 +18,7 @@
     (cond
       (= type "snapshot") :snapshot
       (string? type) :qualified
-      (int? type) :release
+      (integer? type) :release
       :else :unrecognised)))
 
 (defn coord->version-status [lib coord {:keys [mvn/repos mvn/local-repo]}]
