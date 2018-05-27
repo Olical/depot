@@ -3,9 +3,9 @@
 ## v1.1.0
 
  * Merge [#3](https://github.com/Olical/depot/pull/3)
-  * Only consider changes when selected and latest are non-blank strings.
-  * Gather changes and print a nice table rather than printing as differences are found.
-  * Print a message if no changes can be found.
+   * Only consider changes when selected and latest are non-blank strings.
+   * Gather changes and print a nice table rather than printing as differences are found.
+   * Print a message if no changes can be found.
 
 Thank you very much, [@robert-stuttaford](https://github.com/robert-stuttaford)!
 
