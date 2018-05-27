@@ -1,5 +1,6 @@
 (ns depot.outdated.main
-  (:require [clojure.set :as set]
+  (:require [clojure.pprint :as pprint]
+            [clojure.set :as set]
             [clojure.string :as str]
             [clojure.tools.cli :as cli]
             [clojure.tools.deps.alpha :as deps]
@@ -43,7 +44,7 @@
     (-> (sort version/version-compare versions)
         (last))))
 
-(defn print-outdated [consider-types aliases]
+(defn gather-outdated [consider-types aliases]
   (let [deps-map (-> (reader/clojure-env)
                      (:config-files)
                      (reader/read-deps))
@@ -52,12 +53,17 @@
         direct-deps (->> (merge (:deps deps-map) (:extra-deps args-map))
                          (filter (comp :mvn/version val))
                          (map first))]
-    (doseq [[lib coord] (select-keys resolved-universe direct-deps)]
-      (let [versions (coord->version-status lib coord deps-map)
-            latest (find-latest (:types versions) consider-types)
-            selected (-> versions :selected)]
-        (when (= (version/version-compare latest selected) 1)
-          (println (str lib ":") selected "=>" latest))))))
+    (->> (for [[lib coord] (select-keys resolved-universe direct-deps)]
+           (let [{:keys [types selected]} (coord->version-status lib coord deps-map)
+                 latest                   (find-latest types consider-types)]
+             (when (and (not (str/blank? selected))
+                        (not (str/blank? latest))
+                        (= (version/version-compare latest selected) 1))
+               {"Dependency" lib
+                "Current"    selected
+                "Latest"     latest})))
+         (keep identity)
+         (sort-by #(get % "Dependency")))))
 
 (defn comma-str->keywords-set [comma-str]
   (into #{} (map keyword) (str/split comma-str #",")))
@@ -84,5 +90,9 @@
          summary :summary} (cli/parse-opts args cli-options)]
     (if help
       (println summary)
-      (print-outdated consider-types aliases))
+      (let [outdated (gather-outdated consider-types aliases)]
+        (if (empty? outdated)
+          (println "All up to date!")
+          (do (pprint/print-table outdated)
+              (println)))))
     (shutdown-agents)))
