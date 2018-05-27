@@ -8,7 +8,10 @@ You can try it out easily with this one liner:
 
 ```bash
 $ clojure -Sdeps '{:deps {olical/depot {:mvn/version "1.0.1"}}}' -m depot.outdated.main
-org.clojure/clojure: 1.8.0 => 1.9.0
+
+|          Dependency | Current | Latest |
+|---------------------+---------+--------|
+| org.clojure/clojure |   1.8.0 |  1.9.0 |
 ```
 
 I'd recommend adding depot as an alias in your own `deps.edn` file, this will allow it to check itself for updates:
@@ -23,7 +26,10 @@ I'd recommend adding depot as an alias in your own `deps.edn` file, this will al
 
 ```bash
 $ clojure -Aoutdated -a outdated
-olical/depot: ... => ...
+
+|   Dependency | Current | Latest |
+|--------------+---------+--------|
+| olical/depot |   ..... |  ..... |
 ```
 
 ## Existing work
