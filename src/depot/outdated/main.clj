@@ -137,6 +137,6 @@
       (let [outdated (gather-outdated consider-types aliases)]
         (if (empty? outdated)
           (println "All up to date!")
-          (do (pprint/print-table outdated)
+          (do (pprint/print-table ["Dependency" "Current" "Latest"] outdated)
               (println)))))
     (shutdown-agents)))
