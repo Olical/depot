@@ -1,13 +1,13 @@
 # Depot [![Clojars Project](https://img.shields.io/clojars/v/olical/depot.svg)](https://clojars.org/olical/depot)
 
-Find newer versions of your dependencies in your `deps.edn` file using the [Clojure CLI][cli].
+Find newer versions of your dependencies in your `deps.edn` file using the [Clojure CLI][cli]. This works for maven _and_ git dependencies.
 
 ## Usage
 
 You can try it out easily with this one liner:
 
 ```bash
-$ clojure -Sdeps '{:deps {olical/depot {:mvn/version "1.1.0"}}}' -m depot.outdated.main
+$ clojure -Sdeps '{:deps {olical/depot {:mvn/version "1.2.0"}}}' -m depot.outdated.main
 
 |          Dependency | Current | Latest |
 |---------------------+---------+--------|

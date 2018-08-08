@@ -1,5 +1,11 @@
 # Depot changes
 
+## v1.2.0
+
+ * Merge [#4](https://github.com/Olical/depot/pull/4) - Add support for git dependencies.
+
+Thank you, [@kennyjwilli](https://github.com/kennyjwilli), great contribution.
+
 ## v1.1.0
 
  * Merge [#3](https://github.com/Olical/depot/pull/3)
