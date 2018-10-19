@@ -1,5 +1,11 @@
 # Depot changes
 
+## v1.3.0
+
+ * Merge [#5](https://github.com/Olical/depot/pull/5) - Support `:override-deps`.
+ * Bump `org.clojure/tools.cli` to `0.4.1`.
+ * Bump `org.clojure/tools.deps.alpha` to `0.5.460`.
+
 ## v1.2.0
 
  * Merge [#4](https://github.com/Olical/depot/pull/4) - Add support for git dependencies.
