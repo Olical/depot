@@ -100,10 +100,13 @@
                      (:config-files)
                      (reader/read-deps))
         args-map (deps/combine-aliases deps-map aliases)
+        overrides (:override-deps args-map)
         all-deps (merge (:deps deps-map) (:extra-deps args-map))]
     (->> (for [[lib coord] all-deps
-               :let [outdated (current-latest-map lib coord {:consider-types consider-types
-                                                             :deps-map       deps-map})]]
+               :let [outdated (current-latest-map lib
+                                                  (get overrides lib coord)
+                                                  {:consider-types consider-types
+                                                   :deps-map       deps-map})]]
            (when outdated
              (assoc outdated "Dependency" lib)))
          (keep identity)
