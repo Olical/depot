@@ -1,11 +1,12 @@
 {:deps {org.clojure/clojure {:mvn/version "1.9.0"}
         org.clojure/tools.deps.alpha {:mvn/version "0.5.460"}
         org.clojure/tools.cli {:mvn/version "0.4.1"}
+        rewrite-clj {:mvn/version "0.6.1"}
         version-clj {:mvn/version "0.1.2"}}
  :aliases {:dev {:extra-paths ["dev"]
                  :extra-deps {org.clojure/tools.nrepl {:mvn/version "0.2.13"}
-                              cider/cider-nrepl {:mvn/version "0.17.0"}}
+                              cider/cider-nrepl {:mvn/version "0.18.0"}}
                  :main-opts ["-m" "depot.dev.cider"]}
-           :test {:extra-deps {clj-time {:mvn/version "0.14.4"}
+           :test {:extra-deps {clj-time {:mvn/version "0.15.1"}
                                olical/cljs-test-runner {:git/url "https://github.com/Olical/cljs-test-runner.git"
-                                                        :sha "5a18d41648d5c3a64632b5fec07734d32cca7671"}}}}}
+                                                        :sha "da9710b389782d4637ef114176f6e741225e16f0"}}}}}
