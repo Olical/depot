@@ -3,17 +3,29 @@
             [depot.outdated :as depot]
             [rewrite-clj.zip :as rzip]))
 
-(defn zget [loc key]
+(defn zget
+  "Like [[clojure.core/get]], but for a zipper over a map.
+
+  Takes and returns a zipper (loc)."
+  [loc key]
   (rzip/right
    (rzip/find-value (rzip/down loc) (comp rzip/right rzip/right) key)))
 
-(defn update-loc? [loc]
+(defn update-loc?
+  "Should the version at the current position be updated?
+
+  Returns true unless any ancestor has the `^:depot/ignore` metadata."
+  [loc]
   (not (rzip/find loc
                   rzip/up
                   (fn [loc]
                     (:depot/ignore (meta (rzip/sexpr loc)))))))
 
-(defn try-update-artifact [loc consider-types repos]
+(defn try-update-artifact
+  "Attempt to update a specific version in a `:deps` or `:extra-deps` map.
+
+  `loc` points at the artifact name (map key)."
+  [loc consider-types repos]
   (if (update-loc? loc)
     (let [artifact (rzip/sexpr loc)
           coords-loc (rzip/right loc)]
@@ -35,7 +47,11 @@
         loc))
     loc))
 
-(defn update-deps [loc consider-types repos]
+(defn update-deps
+  "Update all deps in a `:deps` or `:extra-deps` map.
+
+  `loc` points at the map."
+  [loc consider-types repos]
   (rzip/up
    (loop [loc (rzip/down loc)]
      (let [loc' (try-update-artifact loc consider-types repos)
@@ -44,7 +60,10 @@
          (recur loc'')
          loc')))))
 
-(defn zmap-vals [loc f & args]
+(defn zmap-vals
+  "Given a zipper pointing at a map, apply a tranformation to each value of the
+  map."
+  [loc f & args]
   (let [loc' (rzip/down loc)]
     (if loc'
       (loop [keyloc loc']
@@ -57,16 +76,17 @@
 (declare update-all)
 
 (defn update-aliases
-  "Update all :aliases, expects a loc pointing at the :aliases map."
+  "Update all `:aliases`, expects a loc pointing at the `:aliases` map."
   [loc consider-types repos]
   (zmap-vals loc update-all consider-types repos))
 
-(defn assert= [x y]
-  (when (not= x y)
-    (let [msg `(~'not= ~x ~y)]
-      (throw (ex-info (prn-str msg) {:error msg})))))
+(defn update-all
+  "Update all `:deps`, `:extra-deps`, and `:aliases`.
 
-(defn update-all [loc consider-types repos]
+  Expects a loc to the top level `deps.edn` map.
+  `consider-types` is a set, one of [[depot.outdated/version-types]].
+  `repos` is a map with optional keys `:mvn/repos` and `:mvn/local-repo`."
+  [loc consider-types repos]
   (let [deps-loc (zget loc :deps)
         loc (if deps-loc
               (rzip/up (update-deps deps-loc consider-types repos))
@@ -81,7 +101,19 @@
               loc)]
     loc))
 
-(defn update-deps-edn! [file consider-types]
+(defn update-deps-edn!
+  "Destructively update a `deps.edn` file.
+
+  Read a `deps.edn` file, update all dependencies in it to their latest version,
+  unless marked with `^:depot/ignore` metadata, then overwrite the file with the
+  updated version. Preserves whitespace and comments.
+
+  This will consider user and system-wide `deps.edn` files for locating Maven
+  repositories, but only considers the given file when determining current
+  versions.
+
+  `consider-types` is a set, one of [[depot.outdated/version-types]]. "
+  [file consider-types]
   (println "Updating:" file)
   (let [deps  (-> (reader/clojure-env)
                   :config-files
