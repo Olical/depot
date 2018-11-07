@@ -10,7 +10,7 @@ You can try it out easily with this one liner:
 $ clojure -Sdeps '{:deps {olical/depot {:mvn/version "1.3.0"}}}' -m depot.outdated.main
 
 |          Dependency | Current | Latest |
-|---------------------|---------|--------|
+|---------------------+---------+--------|
 | org.clojure/clojure |   1.8.0 |  1.9.0 |
 ```
 
@@ -28,7 +28,7 @@ I'd recommend adding depot as an alias in your own `deps.edn` file, this will al
 $ clojure -Aoutdated -a outdated
 
 |   Dependency | Current | Latest |
-|--------------|---------|--------|
+|--------------+---------+--------|
 | olical/depot |   ..... |  ..... |
 ```
 
