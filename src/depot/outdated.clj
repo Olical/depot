@@ -100,11 +100,7 @@
         overrides (:override-deps args-map)
         all-deps (merge (:deps deps-map) (:extra-deps args-map))]
     (->> (for [[lib coord] all-deps
-               :let [_ (prn `(current-latest-map ~lib
-                                                 ~(get overrides lib coord)
-                                                 ~{:consider-types consider-types
-                                                   :deps-map       deps-map}))
-                     outdated (current-latest-map lib
+               :let [outdated (current-latest-map lib
                                                   (get overrides lib coord)
                                                   {:consider-types consider-types
                                                    :deps-map       deps-map})]]
