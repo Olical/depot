@@ -32,6 +32,42 @@ $ clojure -Aoutdated -a outdated
 | olical/depot |   ..... |  ..... |
 ```
 
+### Updating `deps.edn`
+
+To automatically update the versions in `deps.edn`, use `--update`.
+
+```bash
+$ clojure -m depot.outdated.main --update
+Updating: deps.edn
+  rewrite-clj {:mvn/version "0.6.0"} -> {:mvn/version "0.6.1"}
+  cider/cider-nrepl {:mvn/version "0.17.0"} -> {:mvn/version "0.18.0"}
+  clj-time {:mvn/version "0.14.4"} -> {:mvn/version "0.15.1"}
+  olical/cljs-test-runner {:sha "5a18d41648d5c3a64632b5fec07734d32cca7671"} -> {:sha "da9710b389782d4637ef114176f6e741225e16f0"}
+```
+
+This will leave any formatting, whitespace, and comments intact. It will update
+both the top level deps and any `:aliases` / `:extra-deps`. To prevent Depot
+from touching certain parts of your `deps.edn`, mark them with the
+`^:depot/ignore` metadata.
+
+``` clojure
+{:deps {...}
+
+ :aliases
+ {;; used for testing against older versions of Clojure
+  :clojure-1.8 ^:depot/ignore {:extra-deps
+                               {org.clojure/clojure {:mvn/version "1.8.0"}}}
+  :clojure-1.9 ^:depot/ignore {:extra-deps
+                               {org.clojure/clojure {:mvn/version "1.9.0"}}}}}
+```
+
+`--update` by default looks for `deps.edn` in the current working directory. You
+can instead pass one or more filenames in explicitly.
+
+``` bash
+$ clojure -m depot.outdated.main --update ../my-project/deps.edn
+```
+
 ## Existing work
 
 This project is inspired by [lein-ancient][], it relies on [version-clj][] (by the same author, [xsc][]) for parsing and comparison of version numbers.
@@ -41,7 +77,6 @@ This project is inspired by [lein-ancient][], it relies on [version-clj][] (by t
 Here's a few things I'd like to add some day, feel free to discuss or suggest more:
 
  * Searching for dependencies.
- * `deps.edn` manipulation like npm with `package.json`.
 
 ## Unlicenced
 
