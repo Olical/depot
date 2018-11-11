@@ -1,5 +1,11 @@
 # Depot changes
 
+## v1.4.0
+
+ * Merge [#6](https://github.com/Olical/depot/pull/6) - Updating `deps.edn` automatically with `--update`.
+
+Thank you very much, [@plexus](https://github.com/plexus)!
+
 ## v1.3.0
 
  * Merge [#5](https://github.com/Olical/depot/pull/5) - Support `:override-deps`.

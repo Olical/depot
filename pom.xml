@@ -7,7 +7,7 @@
     
   <artifactId>depot</artifactId>
     
-  <version>1.3.0</version>
+  <version>1.4.0</version>
     
   <name>depot</name>
     
@@ -48,6 +48,11 @@
       <groupId>org.clojure</groupId>
       <artifactId>tools.cli</artifactId>
       <version>0.4.1</version>
+    </dependency>
+    <dependency>
+      <groupId>rewrite-clj</groupId>
+      <artifactId>rewrite-clj</artifactId>
+      <version>0.6.1</version>
     </dependency>
     <dependency>
       <groupId>version-clj</groupId>
