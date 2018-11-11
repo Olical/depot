@@ -68,21 +68,6 @@ can instead pass one or more filenames in explicitly.
 $ clojure -m depot.outdated.main --update ../my-project/deps.edn
 ```
 
-To check and update the project `deps.edn` as well as the user-wide and
-system-wide configurations, use `--update-all`. Note that the system-wide
-version may require extra permissions.
-
-``` bash
-$ clojure -m depot.outdated.main --update-all
-Updating: /usr/local/lib/clojure/deps.edn
-  org.clojure/tools.deps.alpha {:mvn/version "0.5.452"} -> {:mvn/version "0.5.460"}
-  [ERROR] Permission denied:  /usr/local/lib/clojure/deps.edn
-Updating: /home/arne/.clojure/deps.edn
-  All up to date!
-Updating: deps.edn
-  All up to date!
-```
-
 ## Existing work
 
 This project is inspired by [lein-ancient][], it relies on [version-clj][] (by the same author, [xsc][]) for parsing and comparison of version numbers.

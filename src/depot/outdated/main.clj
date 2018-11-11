@@ -26,7 +26,6 @@
     :parse-fn comma-str->keywords-set
     :validate [#(set/subset? % depot/version-types) (str "Must be subset of " depot/version-types)]]
    ["-u" "--update" "Update deps.edn, or filenames given as additional command line arguments."]
-   [nil  "--update-all" "Update user, system, and project deps.edn"]
    ["-h" "--help"]])
 
 (defn -main [& args]
@@ -44,10 +43,6 @@
         (run! #(depot.outdated.update/update-deps-edn! % consider-types)
               files)
         (depot.outdated.update/update-deps-edn! "deps.edn" consider-types))
-
-      update-all
-      (run! #(depot.outdated.update/update-deps-edn! % consider-types)
-            (:config-files (reader/clojure-env)))
 
       :else
       (let [outdated (depot/gather-outdated consider-types aliases)]
