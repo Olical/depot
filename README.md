@@ -72,11 +72,13 @@ $ clojure -m depot.outdated.main --update ../my-project/deps.edn
 
 This project is inspired by [lein-ancient][], it relies on [version-clj][] (by the same author, [xsc][]) for parsing and comparison of version numbers.
 
-## Ideas
+## Contributors
 
-Here's a few things I'd like to add some day, feel free to discuss or suggest more:
-
- * Searching for dependencies.
+ * [@Olical](https://github.com/Olical) - Initial work and general maintenance.
+ * [@seancorfield](https://github.com/seancorfield) - Support for `:override-deps`.
+ * [@robert-stuttaford](https://github.com/robert-stuttaford) - Presenting results in a neat table.
+ * [@kennyjwilli](https://github.com/kennyjwilli) - Git dependency support and table improvements.
+ * [@plexus](https://github.com/plexus) - The entire `--update` system!
 
 ## Unlicenced
 
