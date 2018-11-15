@@ -97,19 +97,17 @@
   `consider-types` is a set, one of [[depot.outdated/version-types]].
   `repos` is a map with optional keys `:mvn/repos` and `:mvn/local-repo`."
   [loc consider-types repos]
-  (let [deps-loc (zget loc :deps)
-        loc (if deps-loc
-              (rzip/up (update-deps deps-loc consider-types repos))
-              loc)
-        extra-deps-loc (zget loc :extra-deps)
-        loc (if extra-deps-loc
-              (rzip/up (update-deps extra-deps-loc consider-types repos))
-              loc)
-        aliases-loc (zget loc :aliases)
-        loc (if aliases-loc
-              (rzip/up (update-aliases aliases-loc consider-types repos))
-              loc)]
-    loc))
+  (let [update-key (fn [loc k]
+                     (if-let [deps-loc (zget loc k)]
+                       (rzip/up (update-deps deps-loc consider-types repos))
+                       loc))
+        loc (-> loc
+                (update-key :deps)
+                (update-key :extra-deps)
+                (update-key :override-deps))]
+    (if-let [aliases-loc (zget loc :aliases)]
+      (rzip/up (update-aliases aliases-loc consider-types repos))
+      loc)))
 
 (defn update-deps-edn!
   "Destructively update a `deps.edn` file.
