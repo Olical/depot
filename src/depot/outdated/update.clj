@@ -21,6 +21,13 @@
                   (fn [loc]
                     (:depot/ignore (meta (rzip/sexpr loc)))))))
 
+(defmacro with-print-namespace-maps [bool & body]
+  (if (find-var 'clojure.core/*print-namespace-maps*)
+    `(binding [*print-namespace-maps* ~bool]
+       ~@body)
+    ;; pre Clojure 1.9
+    `(do ~@body)))
+
 (defn try-update-artifact
   "Attempt to update a specific version in a `:deps` or `:extra-deps` map.
 
@@ -37,12 +44,15 @@
         (if-let [[version-loc version-key]
                  (or (some-> (zget coords-loc :mvn/version) (vector :mvn/version))
                      (some-> (zget coords-loc :sha) (vector :sha)))]
-          (do
-            (binding [*print-namespace-maps* false]
-              (println " " artifact (pr-str {version-key (rzip/sexpr version-loc)}) "->" (pr-str {version-key latest})))
-            (rzip/left
-             (rzip/up
-              (rzip/replace version-loc latest))))
+          (let [old-version (rzip/sexpr version-loc)]
+            (if (#{"RELEASE" "LATEST"} old-version) ;; ignore these Maven 2 legacy identifiers
+              loc
+              (do
+                (with-print-namespace-maps false
+                  (println " " artifact (pr-str {version-key old-version}) "->" (pr-str {version-key latest})))
+                (rzip/left
+                 (rzip/up
+                  (rzip/replace version-loc latest))))))
           loc)
         loc))
     loc))
