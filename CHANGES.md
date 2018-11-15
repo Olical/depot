@@ -1,5 +1,12 @@
 # Depot changes
 
+## v1.5.0
+
+ * Merge [#9](https://github.com/Olical/depot/pull/9) - Ignore "RELEASE" and "LATEST", bring back Clojure 1.8 compatibility (as mentioned in [#7](https://github.com/Olical/depot/issues/7)).
+ * Merge [#10](https://github.com/Olical/depot/pull/10) - Let --update also check :override-deps.
+
+Even more improvements from [@plexus](https://github.com/plexus)! I also sorted out some formatting and deleted some unused forms, but that's all.
+
 ## v1.4.0
 
  * Merge [#6](https://github.com/Olical/depot/pull/6) - Updating `deps.edn` automatically with `--update`.
