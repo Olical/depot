@@ -4,8 +4,7 @@
             [clojure.string :as str]
             [clojure.tools.cli :as cli]
             [depot.outdated :as depot]
-            [depot.outdated.update]
-            [clojure.tools.deps.alpha.reader :as reader]))
+            [depot.outdated.update]))
 
 (defn comma-str->keywords-set [comma-str]
   (into #{} (map keyword) (str/split comma-str #",")))
@@ -29,7 +28,7 @@
    ["-h" "--help"]])
 
 (defn -main [& args]
-  (let [{{:keys [aliases consider-types help update update-all]} :options
+  (let [{{:keys [aliases consider-types help update]} :options
          files :arguments
          summary :summary} (cli/parse-opts args cli-options)]
     (cond

@@ -67,22 +67,22 @@
                   (str/split #"\n"))]
     (into {}
           (comp
-           (map (fn [x]
-                  (-> x
-                      (str/triml)
-                      (str/split #"\t")
-                      (reverse)
-                      (vec))))
-           (filter #(= 2 (count %))))
+            (map (fn [x]
+                   (-> x
+                       (str/triml)
+                       (str/split #"\t")
+                       (reverse)
+                       (vec))))
+            (filter #(= 2 (count %))))
           lines)))
 
 (defmethod -current-latest-map :git
   [lib coord _]
-  (let [{:keys [exit out err]} (sh/sh "git" "ls-remote" (:git/url coord))
+  (let [{:keys [exit out]} (sh/sh "git" "ls-remote" (:git/url coord))
         latest-remote-sha (get (parse-git-ls-remote out) "HEAD")]
     (when (and (= exit 0)
                (neg? (ext/compare-versions
-                      lib coord (assoc coord :sha latest-remote-sha) {})))
+                       lib coord (assoc coord :sha latest-remote-sha) {})))
       {"Current" (:sha coord)
        "Latest"  latest-remote-sha})))
 

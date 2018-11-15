@@ -9,7 +9,7 @@
   Takes and returns a zipper (loc)."
   [loc key]
   (rzip/right
-   (rzip/find-value (rzip/down loc) (comp rzip/right rzip/right) key)))
+    (rzip/find-value (rzip/down loc) (comp rzip/right rzip/right) key)))
 
 (defn update-loc?
   "Should the version at the current position be updated?
@@ -51,8 +51,8 @@
                 (with-print-namespace-maps false
                   (println " " artifact (pr-str {version-key old-version}) "->" (pr-str {version-key latest})))
                 (rzip/left
-                 (rzip/up
-                  (rzip/replace version-loc latest))))))
+                  (rzip/up
+                    (rzip/replace version-loc latest))))))
           loc)
         loc))
     loc))
@@ -63,12 +63,12 @@
   `loc` points at the map."
   [loc consider-types repos]
   (rzip/up
-   (loop [loc (rzip/down loc)]
-     (let [loc' (try-update-artifact loc consider-types repos)
-           loc'' (rzip/right (rzip/right loc'))]
-       (if loc''
-         (recur loc'')
-         loc')))))
+    (loop [loc (rzip/down loc)]
+      (let [loc' (try-update-artifact loc consider-types repos)
+            loc'' (rzip/right (rzip/right loc'))]
+        (if loc''
+          (recur loc'')
+          loc')))))
 
 (defn zmap-vals
   "Given a zipper pointing at a map, apply a tranformation to each value of the
@@ -132,7 +132,7 @@
         loc   (rzip/of-file file)
         old-deps (slurp file)
         new-deps (rzip/root-string
-                  (update-all loc consider-types repos))]
+                   (update-all loc consider-types repos))]
     (if (= old-deps new-deps)
       (println "  All up to date!")
       (try
