@@ -9,4 +9,5 @@
                  :main-opts ["-m" "depot.dev.cider"]}
            :test {:extra-deps {clj-time {:mvn/version "0.14.4"}
                                olical/cljs-test-runner {:git/url "https://github.com/Olical/cljs-test-runner.git"
-                                                        :sha "5a18d41648d5c3a64632b5fec07734d32cca7671"}}}}}
+                                                        :sha "5a18d41648d5c3a64632b5fec07734d32cca7671"}
+                               lambdaisland/kaocha {:mvn/version "0.0-266"}}}}}
