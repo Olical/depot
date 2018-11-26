@@ -1,5 +1,9 @@
 # Depot changes
 
+## v1.5.1
+
+ * Merge [#13](https://github.com/Olical/depot/pull/13) - Fix a couple of issues with `--update`.
+
 ## v1.5.0
 
  * Merge [#9](https://github.com/Olical/depot/pull/9) - Ignore "RELEASE" and "LATEST", bring back Clojure 1.8 compatibility (as mentioned in [#7](https://github.com/Olical/depot/issues/7)).
