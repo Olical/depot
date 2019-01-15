@@ -24,11 +24,12 @@
     :default-desc "release"
     :parse-fn comma-str->keywords-set
     :validate [#(set/subset? % depot/version-types) (str "Must be subset of " depot/version-types)]]
+   ["-o" "--overrides" "Consider overrides for updates instead of pinning to them."]
    ["-u" "--update" "Update deps.edn, or filenames given as additional command line arguments."]
    ["-h" "--help"]])
 
 (defn -main [& args]
-  (let [{{:keys [aliases consider-types help update]} :options
+  (let [{{:keys [aliases consider-types overrides help update]} :options
          files :arguments
          summary :summary} (cli/parse-opts args cli-options)]
     (cond
@@ -44,7 +45,7 @@
         (depot.outdated.update/update-deps-edn! "deps.edn" consider-types))
 
       :else
-      (let [outdated (depot/gather-outdated consider-types aliases)]
+      (let [outdated (depot/gather-outdated consider-types aliases overrides)]
         (if (empty? outdated)
           (println "All up to date!")
           (do (pprint/print-table ["Dependency" "Current" "Latest"] outdated)
