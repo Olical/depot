@@ -1,4 +1,4 @@
-.PHONY: dev
+.PHONY: dev test
 
 dev:
 	clojure -Adev
