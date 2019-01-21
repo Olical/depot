@@ -79,6 +79,7 @@ This project is inspired by [lein-ancient][], it relies on [version-clj][] (by t
  * [@robert-stuttaford](https://github.com/robert-stuttaford) - Presenting results in a neat table.
  * [@kennyjwilli](https://github.com/kennyjwilli) - Git dependency support and table improvements.
  * [@plexus](https://github.com/plexus) - The entire `--update` system!
+ * [@daaku](https://github.com/daaku) - Ensuring `:override-deps` is adhered to in the non-mutating mode.
 
 ## Unlicenced
 
