@@ -1,5 +1,9 @@
 # Depot changes
 
+## v1.6.0
+
+ * Merge [#15](https://github.com/Olical/depot/pull/15) - Consider overrides in the outdated check mode too.
+
 ## v1.5.1
 
  * Merge [#13](https://github.com/Olical/depot/pull/13) - Fix a couple of issues with `--update`.
