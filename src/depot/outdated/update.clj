@@ -78,15 +78,10 @@
 
   `loc` points at the map."
   [loc consider-types repos]
-  (if-let [first-key (rzip/down loc)]
-    (rzip/up
-     (loop [loc first-key]
-       (let [loc' (try-update-artifact loc consider-types repos)
-             loc'' (zright (zright loc'))]
-         (if loc''
-           (recur loc'')
-           loc'))))
-    loc))
+  (rzip/map-keys
+   (fn [loc]
+     (try-update-artifact loc consider-types repos))
+   loc))
 
 (defn zmap-vals
   "Given a zipper pointing at a map, apply a tranformation to each value of the
