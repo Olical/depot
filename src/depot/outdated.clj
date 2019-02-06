@@ -6,7 +6,9 @@
             [clojure.tools.deps.alpha.reader :as reader]
             [clojure.tools.deps.alpha.util.maven :as maven]
             [version-clj.core :as version])
-  (:import org.eclipse.aether.resolution.VersionRangeRequest))
+  (:import org.apache.maven.repository.internal.MavenRepositorySystemUtils
+           [org.eclipse.aether RepositorySystem RepositorySystemSession]
+           org.eclipse.aether.resolution.VersionRangeRequest))
 
 (def version-types #{:snapshot :qualified :release})
 
@@ -20,11 +22,18 @@
       (integer? type) :release
       :else :unrecognised)))
 
+(defn- make-session
+  ^RepositorySystemSession [^RepositorySystem system local-repo]
+  (let [session (MavenRepositorySystemUtils/newSession)
+        local-repo-mgr (.newLocalRepositoryManager system session (maven/make-local-repo local-repo))]
+    (.setLocalRepositoryManager session local-repo-mgr)
+    session))
+
 (defn coord->version-status [lib coord {:keys [mvn/repos mvn/local-repo]}]
   (let [local-repo (or local-repo maven/default-local-repo)
         remote-repos (mapv maven/remote-repo repos)
         system (maven/make-system)
-        session (maven/make-session system local-repo)
+        session (make-session system local-repo)
         selected (:mvn/version coord)
         artifact (maven/coord->artifact lib (assoc coord :mvn/version "[0,)"))
         versions-req (doto (new VersionRangeRequest)
