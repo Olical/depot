@@ -80,6 +80,7 @@ This project is inspired by [lein-ancient][], it relies on [version-clj][] (by t
  * [@kennyjwilli](https://github.com/kennyjwilli) - Git dependency support and table improvements.
  * [@plexus](https://github.com/plexus) - The entire `--update` system!
  * [@daaku](https://github.com/daaku) - Ensuring `:override-deps` is adhered to in the non-mutating mode.
+ * [@lverns](https://github.com/lverns) - Reducing the runtime significantly by making multiple requests in parallel.
 
 ## Unlicenced
 

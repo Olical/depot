@@ -1,5 +1,9 @@
 # Depot changes
 
+## v1.7.0
+
+ * Merge [#16](https://github.com/Olical/depot/pull/16) - Reduce the runtime by making multiple requests in parallel.
+
 ## v1.6.0
 
  * Merge [#15](https://github.com/Olical/depot/pull/15) - Consider overrides in the outdated check mode too.
