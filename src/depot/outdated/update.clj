@@ -44,49 +44,56 @@
     ;; pre Clojure 1.9
     `(do ~@body)))
 
-(defn try-update-artifact
-  "Attempt to update a specific version in a `:deps` or `:extra-deps` map.
+(defn- new-versions
+  [deps consider-types repos]
+  (into {}
+        (pmap (fn [[artifact coords]]
+                (let [[old-version version-key]
+                      (or (some-> coords :mvn/version (vector :mvn/version))
+                          (some-> coords :sha (vector :sha)))
+                      new-version (-> (depot/current-latest-map artifact
+                                                                coords
+                                                                {:consider-types consider-types
+                                                                 :deps-map repos})
+                                      (get "Latest"))]
+                  (when (and old-version
+                             ;; ignore these Maven 2 legacy identifiers
+                             (not (#{"RELEASE" "LATEST"} old-version))
+                             new-version)
+                    [artifact {:version-key version-key
+                               :old-version old-version
+                               :new-version new-version}])))
+              deps)))
 
-  `loc` points at the artifact name (map key)."
-  [loc consider-types repos]
-  (if (update-loc? loc)
-    (let [artifact (rzip/sexpr loc)
-          coords-loc (zright loc)]
-      (if-let [latest (get (depot/current-latest-map artifact
-                                                     (rzip/sexpr coords-loc)
-                                                     {:consider-types consider-types
-                                                      :deps-map repos})
-                           "Latest")]
-        (if-let [[version-loc version-key]
-                 (or (some-> (zget coords-loc :mvn/version) (vector :mvn/version))
-                     (some-> (zget coords-loc :sha) (vector :sha)))]
-          (let [old-version (rzip/sexpr version-loc)]
-            (if (#{"RELEASE" "LATEST"} old-version) ;; ignore these Maven 2 legacy identifiers
-              loc
-              (do
-                (with-print-namespace-maps false
-                  (println " " artifact (pr-str {version-key old-version}) "->" (pr-str {version-key latest})))
-                (rzip/left
-                 (rzip/up
-                  (rzip/replace version-loc latest))))))
-          loc)
-        loc))
-    loc))
+(defn- apply-new-version
+  [loc new-versions]
+  (let [artifact (rzip/sexpr loc)
+        {version-key :version-key
+         new-version :new-version
+         old-version :old-version :as v} (get new-versions artifact)
+        coords-loc (zright loc)
+        version-loc (zget coords-loc version-key)]
+    (if (and (update-loc? loc)
+             v)
+      (do
+        (with-print-namespace-maps false
+          (println " " artifact (pr-str {version-key old-version}) "->" (pr-str {version-key new-version})))
+        (rzip/left
+         (rzip/up
+          (rzip/replace version-loc new-version))))
+      loc)))
 
 (defn update-deps
   "Update all deps in a `:deps` or `:extra-deps` map.
 
   `loc` points at the map."
   [loc consider-types repos]
-  (if-let [first-key (rzip/down loc)]
-    (rzip/up
-     (loop [loc first-key]
-       (let [loc' (try-update-artifact loc consider-types repos)
-             loc'' (zright (zright loc'))]
-         (if loc''
-           (recur loc'')
-           loc'))))
-    loc))
+  (let [new-versions (new-versions (rzip/sexpr loc) consider-types repos)]
+    (rzip/map-keys
+     (fn [loc]
+       (apply-new-version loc new-versions))
+     loc)))
+
 
 (defn zmap-vals
   "Given a zipper pointing at a map, apply a tranformation to each value of the
