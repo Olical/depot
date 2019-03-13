@@ -12,16 +12,6 @@
     ;; pre Clojure 1.9
     `(do ~@body)))
 
-(defn update-loc?
-  "Should the version at the current position be updated?
-
-  Returns true unless any ancestor has the `^:depot/ignore` metadata."
-  [loc]
-  (not (rzip/find loc
-                  rzip/up
-                  (fn [loc]
-                    (:depot/ignore (meta (rzip/sexpr loc)))))))
-
 (defn- new-versions
   [deps consider-types repos]
   (into {}
@@ -44,59 +34,25 @@
               deps)))
 
 (defn- apply-new-version
-  [loc new-versions]
-  (let [artifact (rzip/sexpr loc)
-        {version-key :version-key
+  [new-versions [artifact coords]]
+  (let [{version-key :version-key
          new-version :new-version
-         old-version :old-version :as v} (get new-versions artifact)
-        coords-loc (dzip/right loc)
-        version-loc (dzip/zget coords-loc version-key)]
-    (if (and (update-loc? loc)
-             v)
+         old-version :old-version :as v} (get new-versions artifact)]
+    (if (and (not (:depot/ignore (meta artifact))) v)
       (do
         (with-print-namespace-maps false
           (println " " artifact (pr-str {version-key old-version}) "->" (pr-str {version-key new-version})))
-        (rzip/left
-         (rzip/up
-          (rzip/replace version-loc new-version))))
-      loc)))
+        (assoc coords version-key new-version))
+      coords)))
 
 (defn update-deps
-  "Update all deps in a `:deps` or `:extra-deps` map.
+  "Update all deps in a `:deps` or `:extra-deps` or `:override-deps` map, at the
+  top level and in aliases.
 
-  `loc` points at the map."
+  `loc` points at the top level map."
   [loc consider-types repos]
-  (let [new-versions (new-versions (rzip/sexpr loc) consider-types repos)]
-    (dzip/map-keys
-     (fn [loc]
-       (apply-new-version loc new-versions))
-     loc)))
-
-(declare update-all)
-
-(defn update-aliases
-  "Update all `:aliases`, expects a loc pointing at the `:aliases` map."
-  [loc consider-types repos]
-  (dzip/map-vals update-all loc consider-types repos))
-
-(defn update-all
-  "Update all `:deps`, `:extra-deps`, and `:aliases`.
-
-  Expects a loc to the top level `deps.edn` map.
-  `consider-types` is a set, one of [[depot.outdated/version-types]].
-  `repos` is a map with optional keys `:mvn/repos` and `:mvn/local-repo`."
-  [loc consider-types repos]
-  (let [update-key (fn [loc k]
-                     (if-let [deps-loc (dzip/zget loc k)]
-                       (rzip/up (update-deps deps-loc consider-types repos))
-                       loc))
-        loc (-> loc
-                (update-key :deps)
-                (update-key :extra-deps)
-                (update-key :override-deps))]
-    (if-let [aliases-loc (dzip/zget loc :aliases)]
-      (rzip/up (update-aliases aliases-loc consider-types repos))
-      loc)))
+  (let [new-versions (new-versions (dzip/lib-seq loc) consider-types repos)]
+    (dzip/transform-coords loc (partial apply-new-version new-versions))))
 
 (defn update-deps-edn!
   "Destructively update a `deps.edn` file.
@@ -119,7 +75,7 @@
         repos    (select-keys deps [:mvn/repos :mvn/local-repo])
         loc      (rzip/of-file file)
         old-deps (slurp file)
-        loc'     (update-all loc consider-types repos)
+        loc'     (update-deps loc consider-types repos)
         new-deps (rzip/root-string loc')]
     (when (and loc' new-deps) ;; defensive check to prevent writing an empty deps.edn
       (if (= old-deps new-deps)
