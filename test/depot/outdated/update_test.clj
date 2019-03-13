@@ -2,35 +2,12 @@
   (:require [clojure.test :refer :all]
             [depot.outdated.update :as u]
             [rewrite-clj.node :as node]
-            [rewrite-clj.zip :as rzip]))
+            [rewrite-clj.zip :as rzip]
+            [clojure.tools.deps.alpha.util.maven :as maven]))
 
 (def CONSIDER_TYPES_RELEASES #{:release})
-(def REPOS {:mvn/repos
-            {"central" {:url "https://repo1.maven.org/maven2/"},
-             "clojars" {:url "https://repo.clojars.org/"}}})
 
-(deftest zip-skip-ws-test
-  (is (= :foo
-         (-> (rzip/of-string "   ,,, ;;;\n#_123 :foo")
-             (u/zip-skip-ws)
-             rzip/sexpr))))
-
-(deftest zget-test
-  (is (= :bar
-         (-> (rzip/edn (node/coerce {:foo :bar
-                                     :bar :baz}))
-             (u/zget :foo)
-             (rzip/sexpr))))
-
-  (is (nil?
-       (-> (rzip/edn (node/coerce {:foo :bar
-                                   :bar :baz}))
-           (u/zget :unkown))))
-
-  (is (= :baz
-         (-> (rzip/of-string "{:foo :bar #_uneval :bar :baz}")
-             (u/zget :bar)
-             (rzip/sexpr)))))
+(def REPOS {:mvn/repos maven/standard-repos})
 
 (deftest update-loc?-test
   (testing "don't update when tagged with :depot/ignore"

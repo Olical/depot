@@ -1,31 +1,16 @@
 (ns depot.outdated.update
   (:require [clojure.tools.deps.alpha.reader :as reader]
             [depot.outdated :as depot]
+            [depot.zip :as dzip]
             [rewrite-clj.zip :as rzip]
             [clojure.zip :as zip]))
 
-(defn zip-skip-ws
-  "Skip whitespace, comments, and uneval nodes."
-  [loc]
-  (loop [loc loc]
-    (if (and loc
-             (not (rzip/end? loc))
-             (#{:comment :whitespace :newline :comma :uneval} (rzip/tag loc)))
-      (recur (zip/right loc))
-      loc)))
-
-(defn zright
-  "Like [[rewrite-clj.zip/right]], but also skip over uneval nodes"
-  [loc]
-  (some-> loc rzip/right zip-skip-ws))
-
-(defn zget
-  "Like [[clojure.core/get]], but for a zipper over a map.
-
-  Takes and returns a zipper (loc)."
-  [loc key]
-  (rzip/right
-   (rzip/find-value (rzip/down loc) (comp zright zright) key)))
+(defmacro with-print-namespace-maps [bool & body]
+  (if (find-var 'clojure.core/*print-namespace-maps*)
+    `(binding [*print-namespace-maps* ~bool]
+       ~@body)
+    ;; pre Clojure 1.9
+    `(do ~@body)))
 
 (defn update-loc?
   "Should the version at the current position be updated?
@@ -36,13 +21,6 @@
                   rzip/up
                   (fn [loc]
                     (:depot/ignore (meta (rzip/sexpr loc)))))))
-
-(defmacro with-print-namespace-maps [bool & body]
-  (if (find-var 'clojure.core/*print-namespace-maps*)
-    `(binding [*print-namespace-maps* ~bool]
-       ~@body)
-    ;; pre Clojure 1.9
-    `(do ~@body)))
 
 (defn- new-versions
   [deps consider-types repos]
@@ -71,8 +49,8 @@
         {version-key :version-key
          new-version :new-version
          old-version :old-version :as v} (get new-versions artifact)
-        coords-loc (zright loc)
-        version-loc (zget coords-loc version-key)]
+        coords-loc (dzip/right loc)
+        version-loc (dzip/zget coords-loc version-key)]
     (if (and (update-loc? loc)
              v)
       (do
@@ -89,31 +67,17 @@
   `loc` points at the map."
   [loc consider-types repos]
   (let [new-versions (new-versions (rzip/sexpr loc) consider-types repos)]
-    (rzip/map-keys
+    (dzip/map-keys
      (fn [loc]
        (apply-new-version loc new-versions))
      loc)))
-
-
-(defn zmap-vals
-  "Given a zipper pointing at a map, apply a tranformation to each value of the
-  map."
-  [loc f & args]
-  (let [loc' (rzip/down loc)]
-    (if loc'
-      (loop [keyloc loc']
-        (let [valloc (apply f (zright keyloc) args)]
-          (if-let [next-keyloc (zright valloc)]
-            (recur next-keyloc)
-            (rzip/up valloc))))
-      loc)))
 
 (declare update-all)
 
 (defn update-aliases
   "Update all `:aliases`, expects a loc pointing at the `:aliases` map."
   [loc consider-types repos]
-  (zmap-vals loc update-all consider-types repos))
+  (dzip/map-vals update-all loc consider-types repos))
 
 (defn update-all
   "Update all `:deps`, `:extra-deps`, and `:aliases`.
@@ -123,14 +87,14 @@
   `repos` is a map with optional keys `:mvn/repos` and `:mvn/local-repo`."
   [loc consider-types repos]
   (let [update-key (fn [loc k]
-                     (if-let [deps-loc (zget loc k)]
+                     (if-let [deps-loc (dzip/zget loc k)]
                        (rzip/up (update-deps deps-loc consider-types repos))
                        loc))
         loc (-> loc
                 (update-key :deps)
                 (update-key :extra-deps)
                 (update-key :override-deps))]
-    (if-let [aliases-loc (zget loc :aliases)]
+    (if-let [aliases-loc (dzip/zget loc :aliases)]
       (rzip/up (update-aliases aliases-loc consider-types repos))
       loc)))
 
