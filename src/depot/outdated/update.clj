@@ -33,17 +33,28 @@
                                :new-version new-version}])))
               deps)))
 
+(defn update-loc?
+  "Should the version at the current position be updated?
+  Returns true unless any ancestor has the `^:depot/ignore` metadata."
+  [loc]
+  (not (rzip/find loc
+                  rzip/up
+                  (fn [loc]
+                    (:depot/ignore (meta (rzip/sexpr loc)))))))
+
 (defn- apply-new-version
-  [new-versions [artifact coords]]
-  (let [{version-key :version-key
+  [new-versions loc]
+  (let [artifact (rzip/sexpr loc)
+        coords-loc (dzip/right loc)
+        {version-key :version-key
          new-version :new-version
          old-version :old-version :as v} (get new-versions artifact)]
-    (if (and (not (:depot/ignore (meta artifact))) v)
+    (if (and v (update-loc? loc) (update-loc? coords-loc))
       (do
         (with-print-namespace-maps false
           (println " " artifact (pr-str {version-key old-version}) "->" (pr-str {version-key new-version})))
-        (assoc coords version-key new-version))
-      coords)))
+        (dzip/zassoc coords-loc version-key new-version))
+      coords-loc)))
 
 (defn update-deps
   "Update all deps in a `:deps` or `:extra-deps` or `:override-deps` map, at the
@@ -51,8 +62,8 @@
 
   `loc` points at the top level map."
   [loc consider-types repos]
-  (let [new-versions (new-versions (dzip/lib-seq loc) consider-types repos)]
-    (dzip/transform-coords loc (partial apply-new-version new-versions))))
+  (let [new-versions (new-versions (doall (dzip/lib-seq loc)) consider-types repos)]
+    (dzip/transform-libs loc (partial apply-new-version new-versions))))
 
 (defn update-deps-edn!
   "Destructively update a `deps.edn` file.

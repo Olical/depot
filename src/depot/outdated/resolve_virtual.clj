@@ -1,4 +1,4 @@
-(ns depot.outdated.resolve-snapshots
+(ns depot.outdated.resolve-virtual
   (:require [clojure.tools.deps.alpha.reader :as reader]
             [depot.zip :as dzip]
             [depot.outdated :as outdated]
@@ -17,14 +17,19 @@
 
 (defn resolve-all
   [loc repos]
-  (dzip/transform-coords
+  (dzip/transform-libs
    loc
-   (fn [[artifact coords]]
-     (if (some-> coords :mvn/version (str/ends-with? "-SNAPSHOT"))
-       (let [version (resolve-version artifact coords repos)]
-         (println "   " artifact (:mvn/version coords) "-->" version)
-         (assoc coords :mvn/version version))
-       coords))))
+   (fn [loc]
+     (let [artifact (rzip/sexpr loc)
+           coords-loc (dzip/right loc)
+           coords (rzip/sexpr coords-loc)]
+       (if-let [mvn-version (:mvn/version coords)]
+         (if (some (partial str/ends-with? mvn-version) ["-SNAPSHOT" "LATEST" "RELEASE"])
+           (let [version (resolve-version artifact coords repos)]
+             (println "   " artifact (:mvn/version coords) "-->" version)
+             (dzip/zassoc coords-loc :mvn/version version))
+           coords-loc)
+         coords-loc)))))
 
 (defn update-deps-edn! [file]
   (println "Resolving:" file)

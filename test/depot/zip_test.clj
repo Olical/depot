@@ -26,3 +26,20 @@
          (-> (rzip/of-string "{:foo :bar #_uneval :bar :baz}")
              (u/zget :bar)
              (rzip/sexpr)))))
+
+(deftest zassoc-test
+  (let [loc (rzip/of-string "{:foo :bar,\n :baz :baq}")]
+    (is (= "{:foo 123,\n :baz :baq}"
+           (-> loc
+               (u/zassoc :foo 123)
+               rzip/root-string)))
+
+    (is (= "{:foo :bar,\n :baz 123}"
+           (-> loc
+               (u/zassoc :baz 123)
+               rzip/root-string)))
+
+    (is (= "{:foo :bar,\n :baz :baq,\n :baq 123}"
+           (-> loc
+               (u/zassoc :baq 123)
+               rzip/root-string)))))

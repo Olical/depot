@@ -70,12 +70,17 @@ $ clojure -m depot.outdated.main --update ../my-project/deps.edn
 
 ## Freezing snapshots
 
-Maven versions ending in `-SNAPSHOT` are mutable, a maintainer can publish as many snapshots as they like, all with the same version string. This means that re-running the same code twice might yield different results, if in the meanwhile a new snapshot was released.
+Maven has a concept called "virtual" versions, these are similar to Git branches, they are pointers to another version, and the version they point to can change over time. The best known example are snapshot releases. When your `deps.edn` refers to a version `0.4.1-SNAPSHOT`, the version that actually gets installed will look like `0.4.1-20190222.154954-1`.
 
-The `--resolve-snapshots` flag will replace the snapshot version with the current timestamped version that the SNAPSHOT is an alias of, so that your code is once again deterministic.
+A maintainer can publish as many snapshots as they like, all with the same version string. This means that re-running the same code twice might yield different results, if in the meanwhile a new snapshot was released. So installing `0.4.1-SNAPSHOT` again later on may install a completely different version.
+
+For the sake of stability and reproducibility it may be desirable to "lock" this version. This is what the `--resolve-virtual` flag is for. The `--resolve-virtual` flag will replace the snapshot version with the current timestamped version that the SNAPSHOT is an alias of, so that your code is once again deterministic.
+
+Besides `SNAPSHOT` versions `--resolve-virtual` will also handle the special version strings `"RELEASE"` and `"LATEST"`
+
 
 ```
-% clojure -Sdeps '{:deps {olical/depot {:local/root "/home/arne/github/depot"}}}' -m depot.outdated.main --resolve-snapshots
+% clojure -Sdeps '{:deps {olical/depot {:local/root "/home/arne/github/depot"}}}' -m depot.outdated.main --resolve-virtual
 Resolving: deps.edn
    cider/piggieback 0.4.1-SNAPSHOT --> 0.4.1-20190222.154954-1
 ```

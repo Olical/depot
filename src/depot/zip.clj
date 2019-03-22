@@ -5,13 +5,20 @@
 
 (defn- zip-skip-ws
   "Skip whitespace, comments, and uneval nodes."
+  ([loc]
+   (zip-skip-ws loc rzip/right rzip/end?))
+  ([loc next end?]
+   (loop [loc loc]
+     (if (and loc
+              (not (rzip/end? loc))
+              (#{:comment :whitespace :newline :comma :uneval} (rzip/tag loc)))
+       (recur (zip/right loc))
+       loc))))
+
+(defn left
+  "Like [[rewrite-clj.zip/left], but also skip over uneval nodes"
   [loc]
-  (loop [loc loc]
-    (if (and loc
-             (not (rzip/end? loc))
-             (#{:comment :whitespace :newline :comma :uneval} (rzip/tag loc)))
-      (recur (zip/right loc))
-      loc)))
+  (some-> loc rzip/left (zip-skip-ws rzip/left rzip/leftmost?)))
 
 (defn right
   "Like [[rewrite-clj.zip/right]], but also skip over uneval nodes"
@@ -23,8 +30,42 @@
 
   Takes and returns a zipper (loc)."
   [loc key]
-  (rzip/right
+  {:pre [(rzip/map? loc)]}
+  (right
    (rzip/find-value (rzip/down loc) (comp right right) key)))
+
+(defn zassoc
+  "Like [[clojure.core/assoc]], but for a zipper over a map.
+
+  New keys will be added at the end, preserving indentation."
+  [loc k v]
+  {:pre [(rzip/map? loc)]}
+  (if-let [vloc (zget loc k)]
+    ;; key found, just replace the value
+    (rzip/up (rzip/replace vloc v))
+
+    ;; key not found, add it to the end of the map
+    (let [;; loc to the last value in the map
+          loc (rzip/rightmost (rzip/down loc))
+          ;; whitespace nodes preceding the last key in the map. This way we
+          ;; maintain the same use of commas, newlines, whitespace
+          ws-nodes (->> loc
+                        left
+                        zip/lefts
+                        reverse
+                        (take-while rewrite-clj.node/whitespace?)
+                        reverse)
+          ;; copy the whitespace nodes into the end of the map
+          loc (reduce (fn [loc node]
+                        (zip/right (zip/insert-right loc node)))
+                      loc
+                      ws-nodes)]
+      ;; insert key and value
+      (-> loc
+          (rzip/insert-right k)
+          (rzip/right)
+          (rzip/insert-right v)
+          (rzip/up)))))
 
 (defn map-vals
   "Like [[rewrite-clj.zip/map-vals]], but account for uneval nodes, and can take extra args."
@@ -53,11 +94,12 @@
 (defn lib?
   "Is the loc at a library name."
   [loc]
-  (and (= :token (rzip/tag loc))
+  (and loc
+       (= :token (rzip/tag loc))
        (rzip/map? (rzip/up loc))
        (#{:deps :extra-deps :override-deps} (some-> loc
                                                     rzip/up
-                                                    rzip/left
+                                                    left
                                                     rzip/sexpr))))
 
 (defn next-lib
@@ -78,7 +120,7 @@
   coordinate-map]"
   [loc]
   [(rzip/sexpr loc)
-   (rzip/sexpr (rzip/right loc))])
+   (rzip/sexpr (right loc))])
 
 (defn lib-seq
   "A sequence of all libraries in the given zipper over deps.edn, returning a seq
@@ -86,16 +128,13 @@
   [loc]
   (map loc->lib (lib-loc-seq loc)))
 
-(defn transform-coords
+(defn transform-libs
   "Transform all coordinate maps in the given zipper over deps.edn. The function f
-  takes a pair of [library-name coordinate-map] and returns a coordinate map."
+  takes a loc pointing at the library name, and returns a new loc."
   [loc f & args]
   (loop [loc loc
          loc' (next-lib loc)]
     (if loc'
-      (let [coords (apply f (loc->lib loc') args)
-            loc (-> loc'
-                    (rzip/right)
-                    (rzip/replace coords))]
+      (let [loc (-> (apply f loc' args) (rzip/next))]
         (recur loc (next-lib loc)))
       loc)))
