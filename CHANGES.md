@@ -1,5 +1,9 @@
 # Depot changes
 
+## v1.8.0
+
+ * Merge [#17](https://github.com/Olical/depot/pull/17) - Resolve snapshots.
+
 ## v1.7.0
 
  * Merge [#16](https://github.com/Olical/depot/pull/16) - Reduce the runtime by making multiple requests in parallel.

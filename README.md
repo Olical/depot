@@ -7,11 +7,11 @@ Find newer versions of your dependencies in your `deps.edn` file using the [Cloj
 You can try it out easily with this one liner:
 
 ```bash
-$ clojure -Sdeps '{:deps {olical/depot {:mvn/version "1.7.0"}}}' -m depot.outdated.main
+$ clojure -Sdeps '{:deps {olical/depot {:mvn/version "1.8.0"}}}' -m depot.outdated.main
 
 |          Dependency | Current | Latest |
 |---------------------|---------|--------|
-| org.clojure/clojure |   1.8.0 |  1.9.0 |
+| org.clojure/clojure |   1.9.0 |  1.10.0 |
 ```
 
 I'd recommend adding depot as an alias in your own `deps.edn` file, this will allow it to check itself for updates:
@@ -95,7 +95,7 @@ This project is inspired by [lein-ancient][], it relies on [version-clj][] (by t
  * [@seancorfield](https://github.com/seancorfield) - Support for `:override-deps`.
  * [@robert-stuttaford](https://github.com/robert-stuttaford) - Presenting results in a neat table.
  * [@kennyjwilli](https://github.com/kennyjwilli) - Git dependency support and table improvements.
- * [@plexus](https://github.com/plexus) - The entire `--update` system!
+ * [@plexus](https://github.com/plexus) - Both the `--update` and `--resolve-virtual` systems, so many improvements!
  * [@daaku](https://github.com/daaku) - Ensuring `:override-deps` is adhered to in the non-mutating mode.
  * [@lverns](https://github.com/lverns) - Reducing the runtime significantly by making multiple requests in parallel.
 

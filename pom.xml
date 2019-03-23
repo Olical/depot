@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>olical</groupId>
   <artifactId>depot</artifactId>
-  <version>1.7.0</version>
+  <version>1.8.0</version>
   <name>depot</name>
   <description>Find newer versions of your dependencies in your deps.edn file.</description>
   <url>https://github.com/Olical/depot</url>
@@ -20,7 +20,7 @@
     <dependency>
       <groupId>org.clojure</groupId>
       <artifactId>clojure</artifactId>
-      <version>1.9.0</version>
+      <version>1.10.0</version>
     </dependency>
     <dependency>
       <groupId>org.clojure</groupId>
@@ -30,7 +30,7 @@
     <dependency>
       <groupId>org.clojure</groupId>
       <artifactId>tools.deps.alpha</artifactId>
-      <version>0.5.460</version>
+      <version>0.6.496</version>
     </dependency>
     <dependency>
       <groupId>org.clojure</groupId>
@@ -59,7 +59,7 @@
   <repositories>
     <repository>
       <id>clojars</id>
-      <url>https://clojars.org/repo</url>
+      <url>https://repo.clojars.org/</url>
     </repository>
   </repositories>
   <distributionManagement>
