@@ -1,13 +1,16 @@
-{:deps {org.clojure/clojure {:mvn/version "1.9.0"}
-        org.clojure/tools.deps.alpha {:mvn/version "0.5.460"}
+{:deps {org.clojure/clojure {:mvn/version "1.10.0"}
+        org.clojure/tools.deps.alpha {:mvn/version "0.6.496"}
         org.clojure/tools.cli {:mvn/version "0.4.1"}
         rewrite-clj {:mvn/version "0.6.1"}
         version-clj {:mvn/version "0.1.2"}}
  :aliases {:dev {:extra-paths ["dev"]
                  :extra-deps {org.clojure/tools.nrepl {:mvn/version "0.2.13"}
-                              cider/cider-nrepl {:mvn/version "0.18.0"}}
+                              cider/cider-nrepl {:mvn/version "0.21.1"}}
                  :main-opts ["-m" "depot.dev.cider"]}
-           :test {:extra-deps {clj-time {:mvn/version "0.14.4"}
+           :test {:extra-deps {;; Only here to check depot functionality.
+                               clj-time {:mvn/version "0.14.4"}
                                olical/cljs-test-runner {:git/url "https://github.com/Olical/cljs-test-runner.git"
-                                                        :sha "23770db50bf55c98f2907b9e95f4f88b9e316e61"}
-                               lambdaisland/kaocha {:mvn/version "0.0-389"}}}}}
+                                                        :sha "5a18d41648d5c3a64632b5fec07734d32cca7671"}
+
+                               ;; Actually here to run tests.
+                               lambdaisland/kaocha {:mvn/version "0.0-409"}}}}}
