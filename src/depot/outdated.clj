@@ -22,7 +22,7 @@
       (integer? type) :release
       :else :unrecognised)))
 
-(defn- make-session
+(defn make-session
   ^RepositorySystemSession [^RepositorySystem system local-repo]
   (let [session (MavenRepositorySystemUtils/newSession)
         local-repo-mgr (.newLocalRepositoryManager system session (maven/make-local-repo local-repo))]

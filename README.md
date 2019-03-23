@@ -10,7 +10,7 @@ You can try it out easily with this one liner:
 $ clojure -Sdeps '{:deps {olical/depot {:mvn/version "1.7.0"}}}' -m depot.outdated.main
 
 |          Dependency | Current | Latest |
-|---------------------+---------+--------|
+|---------------------|---------|--------|
 | org.clojure/clojure |   1.8.0 |  1.9.0 |
 ```
 
@@ -28,7 +28,7 @@ I'd recommend adding depot as an alias in your own `deps.edn` file, this will al
 $ clojure -Aoutdated -a outdated
 
 |   Dependency | Current | Latest |
-|--------------+---------+--------|
+|--------------|---------|--------|
 | olical/depot |   ..... |  ..... |
 ```
 
@@ -66,6 +66,23 @@ can instead pass one or more filenames in explicitly.
 
 ``` bash
 $ clojure -m depot.outdated.main --update ../my-project/deps.edn
+```
+
+## Freezing snapshots
+
+Maven has a concept called "virtual" versions, these are similar to Git branches, they are pointers to another version, and the version they point to can change over time. The best known example are snapshot releases. When your `deps.edn` refers to a version `0.4.1-SNAPSHOT`, the version that actually gets installed will look like `0.4.1-20190222.154954-1`.
+
+A maintainer can publish as many snapshots as they like, all with the same version string. This means that re-running the same code twice might yield different results, if in the meanwhile a new snapshot was released. So installing `0.4.1-SNAPSHOT` again later on may install a completely different version.
+
+For the sake of stability and reproducibility it may be desirable to "lock" this version. This is what the `--resolve-virtual` flag is for. The `--resolve-virtual` flag will replace the snapshot version with the current timestamped version that the SNAPSHOT is an alias of, so that your code is once again deterministic.
+
+Besides `SNAPSHOT` versions `--resolve-virtual` will also handle the special version strings `"RELEASE"` and `"LATEST"`
+
+
+```
+% clojure -Sdeps '{:deps {olical/depot {:local/root "/home/arne/github/depot"}}}' -m depot.outdated.main --resolve-virtual
+Resolving: deps.edn
+   cider/piggieback 0.4.1-SNAPSHOT --> 0.4.1-20190222.154954-1
 ```
 
 ## Existing work

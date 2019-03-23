@@ -4,7 +4,8 @@
             [clojure.string :as str]
             [clojure.tools.cli :as cli]
             [depot.outdated :as depot]
-            [depot.outdated.update]))
+            [depot.outdated.update]
+            [depot.outdated.resolve-virtual]))
 
 (defn comma-str->keywords-set [comma-str]
   (into #{} (map keyword) (str/split comma-str #",")))
@@ -26,10 +27,11 @@
     :validate [#(set/subset? % depot/version-types) (str "Must be subset of " depot/version-types)]]
    ["-o" "--overrides" "Consider overrides for updates instead of pinning to them."]
    ["-u" "--update" "Update deps.edn, or filenames given as additional command line arguments."]
+   ["-r" "--resolve-virtual" "Convert -SNAPSHOT/RELEASE/LATEST versions into immutable references."]
    ["-h" "--help"]])
 
 (defn -main [& args]
-  (let [{{:keys [aliases consider-types overrides help update]} :options
+  (let [{{:keys [aliases consider-types overrides help update resolve-virtual]} :options
          files :arguments
          summary :summary} (cli/parse-opts args cli-options)]
     (cond
@@ -43,6 +45,12 @@
         (run! #(depot.outdated.update/update-deps-edn! % consider-types)
               files)
         (depot.outdated.update/update-deps-edn! "deps.edn" consider-types))
+
+
+      resolve-virtual
+      (if (seq files)
+        (run! depot.outdated.resolve-virtual/update-deps-edn! files)
+        (depot.outdated.resolve-virtual/update-deps-edn! "deps.edn"))
 
       :else
       (let [outdated (depot/gather-outdated consider-types aliases overrides)]
