@@ -7,12 +7,12 @@
   "Skip whitespace, comments, and uneval nodes."
   ([loc]
    (zip-skip-ws loc rzip/right rzip/end?))
-  ([loc next end?]
+  ([loc next-fn end?-fn]
    (loop [loc loc]
      (if (and loc
-              (not (rzip/end? loc))
+              (not (end?-fn loc))
               (#{:comment :whitespace :newline :comma :uneval} (rzip/tag loc)))
-       (recur (zip/right loc))
+       (recur (next-fn loc))
        loc))))
 
 (defn left

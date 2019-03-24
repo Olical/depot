@@ -2,7 +2,8 @@
   (:require [depot.outdated.resolve-virtual :as r]
             [clojure.test :refer :all]
             [rewrite-clj.zip :as rzip]
-            [clojure.tools.deps.alpha.util.maven :as maven]))
+            [clojure.tools.deps.alpha.util.maven :as maven]
+            [clojure.string :as str]))
 
 (deftest resolve-all-test
   (is (= '{:deps
@@ -17,3 +18,10 @@ cider/piggieback {:mvn/version \"0.4.1-SNAPSHOT\"}}}"
                (r/resolve-all maven/standard-repos)
                rzip/root
                rewrite-clj.node.protocols/sexpr)))))
+
+(deftest resolve-version-test
+  (is
+   (str/starts-with? (r/resolve-version 'cider/piggieback
+                                        {:mvn/version "0.4.1-SNAPSHOT"}
+                                        maven/standard-repos)
+                     "0.4.1-20")))

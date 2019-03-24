@@ -46,7 +46,6 @@
               files)
         (depot.outdated.update/update-deps-edn! "deps.edn" consider-types))
 
-
       resolve-virtual
       (if (seq files)
         (run! depot.outdated.resolve-virtual/update-deps-edn! files)
