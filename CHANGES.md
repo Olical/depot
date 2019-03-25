@@ -1,5 +1,9 @@
 # Depot changes
 
+## v1.8.1
+
+ * Merge [#19](https://github.com/Olical/depot/pull/19) - Fix depot.zip/left, clean up whitespace.
+
 ## v1.8.0
 
  * Merge [#17](https://github.com/Olical/depot/pull/17) - Resolve snapshots.
