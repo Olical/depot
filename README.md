@@ -78,7 +78,6 @@ For the sake of stability and reproducibility it may be desirable to "lock" this
 
 Besides `SNAPSHOT` versions `--resolve-virtual` will also handle the special version strings `"RELEASE"` and `"LATEST"`
 
-
 ```
 % clojure -Sdeps '{:deps {olical/depot {:local/root "/home/arne/github/depot"}}}' -m depot.outdated.main --resolve-virtual
 Resolving: deps.edn

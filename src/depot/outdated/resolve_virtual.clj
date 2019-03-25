@@ -45,6 +45,3 @@
           (spit file new-deps)
           (catch java.io.FileNotFoundException e
             (println "  [ERROR] Permission denied: " file)))))))
-
-#_
-(resolve-version 'cider/piggieback {:mvn/version "0.4.1-SNAPSHOT"} maven/standard-repos)

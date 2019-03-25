@@ -10,6 +10,21 @@
              (#'u/zip-skip-ws)
              rzip/sexpr))))
 
+(deftest right-test
+  (is (= :y
+         (-> (rzip/of-string "[:x   ,,#_123\n  :y]")
+             rzip/down
+             u/right
+             rzip/sexpr))))
+
+(deftest left-test
+  (is (= :x
+         (-> (rzip/of-string "[:x   ,,#_123\n  :y]")
+             rzip/down
+             rzip/rightmost
+             u/left
+             rzip/sexpr))))
+
 (deftest zget-test
   (is (= :bar
          (-> (rzip/edn (node/coerce {:foo :bar
