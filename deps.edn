@@ -9,6 +9,7 @@
                  :main-opts ["-m" "depot.dev.cider"]}
            :test {:extra-deps {;; Only here to check depot functionality.
                                clj-time {:mvn/version "0.14.4"}
+                               cider/cider-nrepl {:mvn/version "0.18.0-SNAPSHOT"}
                                olical/cljs-test-runner {:git/url "https://github.com/Olical/cljs-test-runner.git"
                                                         :sha "5a18d41648d5c3a64632b5fec07734d32cca7671"}
 
