@@ -5,25 +5,34 @@
 
 (defn- zip-skip-ws
   "Skip whitespace, comments, and uneval nodes."
-  ([loc]
-   (zip-skip-ws loc rzip/right rzip/end?))
-  ([loc next-fn end?-fn]
-   (loop [loc loc]
-     (if (and loc
-              (not (end?-fn loc))
-              (#{:comment :whitespace :newline :comma :uneval} (rzip/tag loc)))
-       (recur (next-fn loc))
-       loc))))
+  [loc next-fn skip-fn end?-fn]
+  (loop [loc loc]
+    (cond
+      (nil? loc) loc
+      (end?-fn loc) loc
+
+      (#{:comment :whitespace :newline :comma} (rzip/tag loc))
+      (recur (next-fn loc))
+
+      (= :uneval (rzip/tag loc))
+      (recur (skip-fn loc))
+
+      :else loc)))
 
 (defn left
   "Like [[rewrite-clj.zip/left], but also skip over uneval nodes"
   [loc]
-  (some-> loc rzip/left (zip-skip-ws rzip/left rzip/leftmost?)))
+  (some-> loc rzip/left (zip-skip-ws rzip/left rzip/left (constantly false))))
 
 (defn right
   "Like [[rewrite-clj.zip/right]], but also skip over uneval nodes"
   [loc]
-  (some-> loc rzip/right zip-skip-ws))
+  (some-> loc rzip/right (zip-skip-ws rzip/right rzip/right (constantly false))))
+
+(defn znext
+  "Like [[rewrite-clj.zip/next]], but also skip over uneval nodes"
+  [loc]
+  (some-> loc rzip/next (zip-skip-ws rzip/next rzip/right rzip/end?)))
 
 (defn zget
   "Like [[clojure.core/get]], but for a zipper over a map.
@@ -105,7 +114,7 @@
 (defn next-lib
   "Find the next loc, depth first, that is a library name."
   [loc]
-  (rzip/find-next-depth-first loc lib?))
+  (rzip/find-next loc znext lib?))
 
 (defn lib-loc-seq
   "A sequence of zippers each pointing at a library name."
@@ -135,6 +144,6 @@
   (loop [loc loc
          loc' (next-lib loc)]
     (if loc'
-      (let [loc (-> (apply f loc' args) (rzip/next))]
+      (let [loc (-> (apply f loc' args) znext)]
         (recur loc (next-lib loc)))
       loc)))

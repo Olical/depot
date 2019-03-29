@@ -3,7 +3,8 @@
             [clojure.test :refer :all]
             [rewrite-clj.zip :as rzip]
             [clojure.tools.deps.alpha.util.maven :as maven]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [depot.zip :as dzip]))
 
 (deftest resolve-all-test
   (is (= '{:deps
