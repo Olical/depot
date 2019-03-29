@@ -4,12 +4,6 @@
             [rewrite-clj.node :as node]
             [clojure.test :refer :all]))
 
-(deftest zip-skip-ws-test
-  (is (= :foo
-         (-> (rzip/of-string "   ,,, ;;;\n#_123 :foo")
-             (#'u/zip-skip-ws)
-             rzip/sexpr))))
-
 (deftest right-test
   (is (= :y
          (-> (rzip/of-string "[:x   ,,#_123\n  :y]")
