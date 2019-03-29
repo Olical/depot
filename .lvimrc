@@ -1,0 +1,1 @@
+nnoremap <localleader>rc :ConjureAdd {:tag :depot, :port 30505}<cr>

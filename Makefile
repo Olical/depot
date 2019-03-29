@@ -1,10 +1,14 @@
-.PHONY: dev test pom
+.PHONY: cider prepl test pom
 
-dev:
-	clojure -Adev
+cider:
+	clojure -Acider
+
+prepl:
+	clojure -Aprepl
 
 test:
 	clojure -Atest -m depot.outdated.main -a test -t release,qualified
 
 pom:
-	clj -Spom; and xmllint --format pom.xml -o pom.xml
+	clojure -Spom
+	xmllint --format pom.xml -o pom.xml
