@@ -1,5 +1,11 @@
 # Depot changes
 
+## v1.8.2
+
+ * Merge [#21](https://github.com/Olical/depot/pull/21) - Handle uneval nodes, fixing [#20](https://github.com/Olical/depot/issues/20).
+
+`--resolve-virtual` should now be stable, all thanks to [@plexus](https://github.com/plexus).
+
 ## v1.8.1
 
  * Merge [#19](https://github.com/Olical/depot/pull/19) - Fix depot.zip/left, clean up whitespace.

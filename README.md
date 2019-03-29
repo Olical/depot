@@ -7,7 +7,7 @@ Find newer versions of your dependencies in your `deps.edn` file using the [Cloj
 You can try it out easily with this one liner:
 
 ```bash
-$ clojure -Sdeps '{:deps {olical/depot {:mvn/version "1.8.1"}}}' -m depot.outdated.main
+$ clojure -Sdeps '{:deps {olical/depot {:mvn/version "1.8.2"}}}' -m depot.outdated.main
 
 |          Dependency | Current | Latest |
 |---------------------|---------|--------|
@@ -91,12 +91,12 @@ This project is inspired by [lein-ancient][], it relies on [version-clj][] (by t
 ## Contributors
 
  * [@Olical](https://github.com/Olical) - Initial work and general maintenance.
- * [@seancorfield](https://github.com/seancorfield) - Support for `:override-deps`.
- * [@robert-stuttaford](https://github.com/robert-stuttaford) - Presenting results in a neat table.
- * [@kennyjwilli](https://github.com/kennyjwilli) - Git dependency support and table improvements.
- * [@plexus](https://github.com/plexus) - Both the `--update` and `--resolve-virtual` systems, so many improvements!
  * [@daaku](https://github.com/daaku) - Ensuring `:override-deps` is adhered to in the non-mutating mode.
+ * [@kennyjwilli](https://github.com/kennyjwilli) - Git dependency support and table improvements.
  * [@lverns](https://github.com/lverns) - Reducing the runtime significantly by making multiple requests in parallel.
+ * [@plexus](https://github.com/plexus) - Both the `--update` and `--resolve-virtual` systems, so many improvements!
+ * [@robert-stuttaford](https://github.com/robert-stuttaford) - Presenting results in a neat table.
+ * [@seancorfield](https://github.com/seancorfield) - Support for `:override-deps`.
 
 ## Unlicenced
 
