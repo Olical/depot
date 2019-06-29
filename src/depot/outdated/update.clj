@@ -79,8 +79,7 @@
   `consider-types` is a set, one of [[depot.outdated/version-types]]. "
   [file consider-types]
   (println "Updating:" file)
-  (let [deps (-> (reader/clojure-env)
-                 :config-files
+  (let [deps (-> (reader/default-deps)
                  reader/read-deps)
 
         repos    (select-keys deps [:mvn/repos :mvn/local-repo])
