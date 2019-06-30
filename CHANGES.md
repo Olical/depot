@@ -1,5 +1,9 @@
 # Depot changes
 
+## v1.8.3
+
+ * Merge [#24](https://github.com/Olical/depot/pull/24) - Replace calls to `clojure-env` with new API.
+
 ## v1.8.2
 
  * Merge [#21](https://github.com/Olical/depot/pull/21) - Handle uneval nodes, fixing [#20](https://github.com/Olical/depot/issues/20).
