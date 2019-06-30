@@ -102,8 +102,7 @@
   (-current-latest-map lib coord data))
 
 (defn gather-outdated [consider-types aliases include-overrides]
-  (let [deps-map (-> (reader/clojure-env)
-                     (:config-files)
+  (let [deps-map (-> (reader/default-deps)
                      (reader/read-deps))
         args-map (deps/combine-aliases deps-map aliases)
         overrides (:override-deps args-map)

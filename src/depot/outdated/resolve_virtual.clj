@@ -33,7 +33,7 @@
 
 (defn update-deps-edn! [file]
   (println "Resolving:" file)
-  (let [deps     (-> (reader/clojure-env) :config-files reader/read-deps)
+  (let [deps     (-> (reader/default-deps) reader/read-deps)
         loc      (rzip/of-file file)
         old-deps (slurp file)
         loc'     (resolve-all loc (:mvn/repos deps))
