@@ -1,5 +1,9 @@
 # Depot changes
 
+## v1.8.4
+
+ * Republish v1.8.3 without the `target` directory which contained some old AOTed classes. Thanks for the heads up, Sean Corfield!
+
 ## v1.8.3
 
  * Merge [#24](https://github.com/Olical/depot/pull/24) - Replace calls to `clojure-env` with new API.

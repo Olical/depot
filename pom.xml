@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>olical</groupId>
   <artifactId>depot</artifactId>
-  <version>1.8.3</version>
+  <version>1.8.4</version>
   <name>depot</name>
   <description>Find newer versions of your dependencies in your deps.edn file.</description>
   <url>https://github.com/Olical/depot</url>
