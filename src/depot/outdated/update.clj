@@ -11,27 +11,6 @@
     ;; pre Clojure 1.9
     `(do ~@body)))
 
-(defn- new-versions
-  [deps consider-types repos]
-  (into {}
-        (pmap (fn [[artifact coords]]
-                (let [[old-version version-key]
-                      (or (some-> coords :mvn/version (vector :mvn/version))
-                          (some-> coords :sha (vector :sha)))
-                      new-version (-> (depot/current-latest-map artifact
-                                                                coords
-                                                                {:consider-types consider-types
-                                                                 :deps-map repos})
-                                      (get "Latest"))]
-                  (when (and old-version
-                             ;; ignore these Maven 2 legacy identifiers
-                             (not (#{"RELEASE" "LATEST"} old-version))
-                             new-version)
-                    [artifact {:version-key version-key
-                               :old-version old-version
-                               :new-version new-version}])))
-              deps)))
-
 (defn update-loc?
   "Should the version at the current position be updated?
   Returns true unless any ancestor has the `^:depot/ignore` metadata."
@@ -41,6 +20,33 @@
                   (fn [loc]
                     (:depot/ignore (meta (rzip/sexpr loc)))))))
 
+(defn- new-versions
+  [loc consider-types repos]
+  (let [deps (->> (dzip/lib-loc-seq loc)
+                  (filter (fn [loc]
+                            (and (update-loc? loc)
+                                 (update-loc? (dzip/right loc)))))
+                  (map dzip/loc->lib)
+                  doall)]
+    (into {}
+          (pmap (fn [[artifact coords]]
+                  (let [[old-version version-key]
+                        (or (some-> coords :mvn/version (vector :mvn/version))
+                            (some-> coords :sha (vector :sha)))
+                        new-version (-> (depot/current-latest-map artifact
+                                                                  coords
+                                                                  {:consider-types consider-types
+                                                                   :deps-map repos})
+                                        (get "Latest"))]
+                    (when (and old-version
+                               ;; ignore these Maven 2 legacy identifiers
+                               (not (#{"RELEASE" "LATEST"} old-version))
+                               new-version)
+                      [artifact {:version-key version-key
+                                 :old-version old-version
+                                 :new-version new-version}])))
+                deps))))
+
 (defn- apply-new-version
   [new-versions loc]
   (let [artifact (rzip/sexpr loc)
@@ -48,7 +54,7 @@
         {version-key :version-key
          new-version :new-version
          old-version :old-version :as v} (get new-versions artifact)]
-    (if (and v (update-loc? loc) (update-loc? coords-loc))
+    (if v
       (do
         (with-print-namespace-maps false
           (println " " artifact (pr-str {version-key old-version}) "->" (pr-str {version-key new-version})))
@@ -61,7 +67,7 @@
 
   `loc` points at the top level map."
   [loc consider-types repos]
-  (let [new-versions (new-versions (doall (dzip/lib-seq loc)) consider-types repos)]
+  (let [new-versions (new-versions loc consider-types repos)]
     (dzip/transform-libs loc (partial apply-new-version new-versions))))
 
 (defn update-deps-edn!
