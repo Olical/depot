@@ -52,3 +52,31 @@
            (-> loc
                (u/zassoc :baq 123)
                rzip/root-string)))))
+
+(deftest lib-loc-seq-test
+  (let [loc (rzip/of-string (pr-str '{:deps
+                                      {foo {:mvn/version "1.0"}}
+                                      :aliases
+                                      {:test
+                                       {:extra-deps {bar {:mvn/version "1.9.8"}}}}}))
+        loc-seq (u/lib-loc-seq loc)]
+    (is (= 2
+           (count loc-seq)))
+
+    (is (= (-> loc
+               rzip/down
+               rzip/right
+               rzip/down)
+           (first loc-seq)))
+
+    (is (= (-> loc
+             rzip/down
+             rzip/right
+             rzip/right
+             rzip/right
+             rzip/down
+             rzip/right
+             rzip/down
+             rzip/right
+             rzip/down)
+         (second loc-seq)))))
