@@ -53,9 +53,7 @@
         (depot.outdated.resolve-virtual/update-deps-edn! "deps.edn"))
 
       :else
-      (let [outdated (depot/gather-outdated consider-types aliases overrides)]
-        (if (empty? outdated)
-          (println "All up to date!")
-          (do (pprint/print-table ["Dependency" "Current" "Latest"] outdated)
-              (println)))))
+      (if (seq files)
+        (run! #(depot.outdated.update/check-deps-edn % consider-types) files)
+        (depot.outdated.update/check-deps-edn "deps.edn" consider-types)))
     (shutdown-agents)))
