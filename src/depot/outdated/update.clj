@@ -69,10 +69,11 @@
   "Update all deps in a `:deps` or `:extra-deps` or `:override-deps` map, at the
   top level and in aliases.
 
+  `new-versions` is a map of artifact the to-be-applied updates.
+
   `loc` points at the top level map."
-  [loc consider-types repos]
-  (let [new-versions (new-versions loc consider-types repos)]
-    (dzip/transform-libs loc (partial apply-new-version new-versions))))
+  [loc new-versions]
+  (dzip/transform-libs loc (partial apply-new-version new-versions)))
 
 (defn update-deps-edn!
   "Destructively update a `deps.edn` file.
@@ -94,7 +95,8 @@
         repos    (select-keys deps [:mvn/repos :mvn/local-repo])
         loc      (rzip/of-file file)
         old-deps (slurp file)
-        loc'     (update-deps loc consider-types repos)
+        new-versions (new-versions loc consider-types repos)
+        loc'     (update-deps loc new-versions)
         new-deps (rzip/root-string loc')]
     (when (and loc' new-deps) ;; defensive check to prevent writing an empty deps.edn
       (if (= old-deps new-deps)
