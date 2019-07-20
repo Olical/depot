@@ -69,7 +69,7 @@
   "Update all deps in a `:deps` or `:extra-deps` or `:override-deps` map, at the
   top level and in aliases.
 
-  `new-versions` is a map of artifact the to-be-applied updates.
+  `new-versions` is a map of artifact to the to-be-applied updates.
 
   `loc` points at the top level map."
   [loc new-versions]
