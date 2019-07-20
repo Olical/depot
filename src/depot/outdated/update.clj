@@ -21,6 +21,10 @@
                     (:depot/ignore (meta (rzip/sexpr loc)))))))
 
 (defn- new-versions
+  "Find all deps in a `:deps` or `:extra-deps` or `:override-deps` map to be updated,
+  at the top level and in aliases.
+
+  `loc` points at the top level map."
   [loc consider-types repos]
   (let [deps (->> (dzip/lib-loc-seq loc)
                   (filter (fn [loc]
