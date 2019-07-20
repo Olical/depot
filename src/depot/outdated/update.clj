@@ -124,3 +124,66 @@
   [file consider-types]
   (println "Checking:" file)
   (update-deps-edn* file consider-types false))
+
+(defn- apply-to-deps-map
+  "Given a `loc` pointing at a map, and a new-versions map, apply
+  any applicable changes, and log them."
+  [loc new-versions]
+  (dzip/map-keys (partial apply-new-version new-versions) loc))
+
+(defn- apply-top-level-deps
+  "Given a root `loc`, and a new-versions map, apply new versions
+   to the top-level dependencies."
+  [loc new-versions]
+  (-> loc
+      (rzip/get :deps)
+      (apply-to-deps-map  new-versions)
+      rzip/up))
+
+(defn- apply-alias-deps
+  [loc include-override-deps? new-versions]
+  (cond-> loc
+    (rzip/get loc :extra-deps)
+    (-> (rzip/get :extra-deps)
+        (apply-to-deps-map new-versions)
+        rzip/up)
+
+    (and include-override-deps? (rzip/get loc :override-deps))
+    (-> (rzip/get :override-deps)
+        (apply-to-deps-map new-versions)
+        rzip/up)))
+
+(defn- apply-aliases-deps
+  "`loc` points to the root of the deps.edn file."
+  [loc aliases include-override-deps? new-versions]
+  (let [alias-map (rzip/get loc :aliases)]
+    (dzip/map-keys (fn [loc]
+                     (let [alias-name (rzip/sexpr loc)]
+                       (if (contains? aliases alias-name)
+                         (-> loc
+                             rzip/right
+                             (apply-alias-deps include-override-deps? new-versions)
+                             rzip/left)
+                         loc)))
+                   alias-map)))
+
+(defn apply-new-versions
+  [file consider-types aliases include-override-deps? write?]
+  (let [action (if write? "Updating" "Checking")]
+    (printf "%s: %s\n" action file))
+  (let [deps (reader/read-deps (reader/default-deps))
+        repos    (select-keys deps [:mvn/repos :mvn/local-repo])
+        loc      (rzip/of-file file)
+        old-deps (slurp file)
+        new-versions (new-versions loc consider-types repos)
+        loc'     (-> loc
+                     (apply-top-level-deps new-versions)
+                     (apply-aliases-deps aliases include-override-deps? new-versions))
+        new-deps (rzip/root-string loc')]
+    (when (and loc' new-deps) ;; defensive check to prevent writing an empty deps.edn
+      (if (= old-deps new-deps)
+        (println "  All up to date!")
+        (try
+          (when write? (spit file new-deps))
+          (catch java.io.FileNotFoundException e
+            (println "  [ERROR] Permission denied: " file)))))))

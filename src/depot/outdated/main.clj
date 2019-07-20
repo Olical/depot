@@ -41,19 +41,13 @@
         (println "USAGE: clojure -m depot.outdated.main [OPTIONS] [FILES]\n")
         (println summary))
 
-      update
-      (if (seq files)
-        (run! #(depot.outdated.update/update-deps-edn! % consider-types)
-              files)
-        (depot.outdated.update/update-deps-edn! "deps.edn" consider-types))
-
       resolve-virtual
       (if (seq files)
         (run! depot.outdated.resolve-virtual/update-deps-edn! files)
         (depot.outdated.resolve-virtual/update-deps-edn! "deps.edn"))
 
       :else
-      (if (seq files)
-        (run! #(depot.outdated.update/check-deps-edn % consider-types) files)
-        (depot.outdated.update/check-deps-edn "deps.edn" consider-types)))
+      (let [files (if (seq files) files ["deps.edn"])]
+        (run! #(depot.outdated.update/apply-new-versions % consider-types aliases overrides update)
+              files)))
     (shutdown-agents)))
