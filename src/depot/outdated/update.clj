@@ -2,8 +2,7 @@
   (:require [clojure.tools.deps.alpha.reader :as reader]
             [depot.outdated :as depot]
             [depot.zip :as dzip]
-            [rewrite-clj.zip :as rzip]
-            [clojure.zip :as zip]))
+            [rewrite-clj.zip :as rzip]))
 
 (defmacro with-print-namespace-maps [bool & body]
   (if (find-var 'clojure.core/*print-namespace-maps*)
