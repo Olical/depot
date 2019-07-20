@@ -136,21 +136,26 @@
    to the top-level dependencies."
   [loc new-versions]
   (-> loc
-      (rzip/get :deps)
+      (dzip/zget :deps)
+      dzip/enter-meta
       (apply-to-deps-map  new-versions)
-      rzip/up))
+      dzip/exit-meta))
 
 (defn- apply-alias-deps
   [loc include-override-deps? new-versions]
   (cond-> loc
-    (rzip/get loc :extra-deps)
-    (-> (rzip/get :extra-deps)
+    (dzip/zget loc :extra-deps)
+    (-> (dzip/zget :extra-deps)
+        dzip/enter-meta
         (apply-to-deps-map new-versions)
+        dzip/exit-meta
         rzip/up)
 
-    (and include-override-deps? (rzip/get loc :override-deps))
-    (-> (rzip/get :override-deps)
+    (and include-override-deps? (dzip/zget loc :override-deps))
+    (-> (dzip/zget :override-deps)
+        dzip/enter-meta
         (apply-to-deps-map new-versions)
+        dzip/exit-meta
         rzip/up)))
 
 (defn- apply-aliases-deps
@@ -162,7 +167,9 @@
                        (if (contains? aliases alias-name)
                          (-> loc
                              rzip/right
+                             dzip/enter-meta
                              (apply-alias-deps include-override-deps? new-versions)
+                             dzip/exit-meta
                              rzip/left)
                          loc)))
                    alias-map)))
