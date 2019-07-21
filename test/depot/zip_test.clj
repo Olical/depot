@@ -4,6 +4,27 @@
             [rewrite-clj.node :as node]
             [clojure.test :refer :all]))
 
+(deftest enter-meta-test
+  (are [input] (= :map (-> (rzip/of-string input)
+                           (rzip/get :d)
+                           (u/enter-meta)
+                           (rzip/tag)))
+    "{:d {:a 0 :b 1}}"
+    "{:d ^:depot/ignore {:a 0 :b 1}}"
+    "{:d ^:depot/ignore ^:foo/bar {:a 0 :b 1}}"))
+
+(deftest exit-meta-test
+  (are [input] (= {:d {:a 0 :b 1}}
+                  (-> (rzip/of-string input)
+                      (rzip/get :d)
+                      (u/enter-meta)
+                      (u/exit-meta)
+                      (rzip/up)
+                      (rzip/sexpr)))
+    "{:d {:a 0 :b 1}}"
+    "{:d ^:depot/ignore {:a 0 :b 1}}"
+    "{:d ^:depot/ignore ^:foo/bar {:a 0 :b 1}}"))
+
 (deftest right-test
   (is (= :y
          (-> (rzip/of-string "[:x   ,,#_123\n  :y]")

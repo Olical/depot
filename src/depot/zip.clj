@@ -34,6 +34,26 @@
   [loc]
   (some-> loc rzip/next (zip-skip-ws rzip/next rzip/right rzip/end?)))
 
+(defn enter-meta
+  "If the given `loc` is a meta node, navigate down to the value to which it is attached,
+  else return the `loc`."
+  [loc]
+  (if (not= :meta (rzip/tag loc))
+    loc
+    (-> loc
+        rzip/down
+        right
+        (recur))))
+
+(defn exit-meta
+  "If the given `loc`'s parent is a meta node, return the first ancestor whose parent is not,
+  else return the `loc`."
+  [loc]
+  (let [loc' (rzip/up loc)]
+    (if (= :meta (rzip/tag loc'))
+      (recur loc')
+      loc)))
+
 (defn zget
   "Like [[clojure.core/get]], but for a zipper over a map.
 
