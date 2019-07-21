@@ -54,16 +54,24 @@
 (defn- apply-new-version
   [new-versions loc]
   (let [artifact (rzip/sexpr loc)
-        coords-loc (dzip/right loc)
+        coords-loc (-> loc
+                       dzip/right
+                       dzip/enter-meta)
         {version-key :version-key
          new-version :new-version
          old-version :old-version :as v} (get new-versions artifact)]
-    (if v
-      (do
-        (with-print-namespace-maps false
-          (println " " artifact (pr-str {version-key old-version}) "->" (pr-str {version-key new-version})))
-        (dzip/zassoc coords-loc version-key new-version))
-      coords-loc)))
+    (->
+     (if (not v)
+       coords-loc
+       (do (with-print-namespace-maps false
+             (println " "
+                      artifact
+                      (pr-str {version-key old-version})
+                      "->"
+                      (pr-str {version-key new-version})))
+           (dzip/zassoc coords-loc version-key new-version)))
+     dzip/exit-meta
+     dzip/left)))
 
 (defn update-deps
   "Update all deps in a `:deps` or `:extra-deps` or `:override-deps` map, at the
@@ -139,7 +147,8 @@
       (dzip/zget :deps)
       dzip/enter-meta
       (apply-to-deps-map  new-versions)
-      dzip/exit-meta))
+      dzip/exit-meta
+      rzip/up))
 
 (defn- apply-alias-deps
   [loc include-override-deps? new-versions]
@@ -161,7 +170,7 @@
 (defn- apply-aliases-deps
   "`loc` points to the root of the deps.edn file."
   [loc aliases include-override-deps? new-versions]
-  (let [alias-map (rzip/get loc :aliases)]
+  (let [alias-map (dzip/zget loc :aliases)]
     (dzip/map-keys (fn [loc]
                      (let [alias-name (rzip/sexpr loc)]
                        (if (contains? aliases alias-name)
