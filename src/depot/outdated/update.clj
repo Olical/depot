@@ -74,42 +74,42 @@
      dzip/left)))
 
 (defn- apply-to-deps-map
-  "Given a `loc` pointing at a map, and a new-versions map, apply
-  any applicable changes, and log them."
-  [loc new-versions]
-  (dzip/map-keys (partial apply-new-version new-versions) loc))
+  "Given a `loc` pointing at a map and f apply
+  to every dependency in the map."
+  [loc f]
+  (dzip/map-keys f loc))
 
 (defn- apply-top-level-deps
-  "Given a root `loc`, and a new-versions map, apply new versions
+  "Given a root `loc`, and a new-versions map, apply f
    to the top-level dependencies."
-  [loc new-versions]
+  [loc f]
   (-> loc
       (dzip/zget :deps)
       dzip/enter-meta
-      (apply-to-deps-map  new-versions)
+      (apply-to-deps-map f)
       dzip/exit-meta
       rzip/up))
 
 (defn- apply-alias-deps
-  [loc include-override-deps? new-versions]
+  [loc include-override-deps? f]
   (cond-> loc
     (dzip/zget loc :extra-deps)
     (-> (dzip/zget :extra-deps)
         dzip/enter-meta
-        (apply-to-deps-map new-versions)
+        (apply-to-deps-map f)
         dzip/exit-meta
         rzip/up)
 
     (and include-override-deps? (dzip/zget loc :override-deps))
     (-> (dzip/zget :override-deps)
         dzip/enter-meta
-        (apply-to-deps-map new-versions)
+        (apply-to-deps-map f)
         dzip/exit-meta
         rzip/up)))
 
 (defn- apply-aliases-deps
   "`loc` points to the root of the deps.edn file."
-  [loc include-alias? include-override-deps? new-versions]
+  [loc include-alias? include-override-deps? f]
   (let [alias-map (dzip/zget loc :aliases)]
     (dzip/map-keys (fn [loc]
                      (let [alias-name (rzip/sexpr loc)]
@@ -117,7 +117,7 @@
                          (-> loc
                              rzip/right
                              dzip/enter-meta
-                             (apply-alias-deps include-override-deps? new-versions)
+                             (apply-alias-deps include-override-deps? f)
                              dzip/exit-meta
                              rzip/left)
                          loc)))
@@ -133,8 +133,10 @@
         old-deps (slurp file)
         new-versions (new-versions loc consider-types repos)
         loc'     (-> loc
-                     (apply-top-level-deps new-versions)
-                     (apply-aliases-deps include-alias? include-override-deps? new-versions))
+                     (apply-top-level-deps (partial apply-new-version new-versions))
+                     (apply-aliases-deps include-alias?
+                                         include-override-deps?
+                                         (partial apply-new-version new-versions)))
         new-deps (rzip/root-string loc')]
     (when (and loc' new-deps) ;; defensive check to prevent writing an empty deps.edn
       (if (= old-deps new-deps)
