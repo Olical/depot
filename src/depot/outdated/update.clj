@@ -124,9 +124,9 @@
                    alias-map)))
 
 (defn apply-new-versions
-  [file consider-types include-alias? include-override-deps? write?]
-  (let [action (if write? "Updating" "Checking")]
-    (printf "%s: %s\n" action file))
+  [file consider-types include-alias? include-override-deps? write? messages]
+  (let [start-message ((if write? :start-write :start-read-only) messages)]
+    (printf (str start-message "\n") file))
   (let [deps (reader/read-deps (reader/default-deps))
         repos    (select-keys deps [:mvn/repos :mvn/local-repo])
         loc      (rzip/of-file file)
@@ -140,7 +140,7 @@
         new-deps (rzip/root-string loc')]
     (when (and loc' new-deps) ;; defensive check to prevent writing an empty deps.edn
       (if (= old-deps new-deps)
-        (println "  All up to date!")
+        (println (:no-changes messages))
         (try
           (when write? (spit file new-deps))
           (catch java.io.FileNotFoundException e

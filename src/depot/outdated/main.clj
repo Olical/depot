@@ -30,6 +30,14 @@
    ["-r" "--resolve-virtual" "Convert -SNAPSHOT/RELEASE/LATEST versions into immutable references."]
    ["-h" "--help"]])
 
+(def ^:private messages
+  {:resolve-virtual {:start-read-only "Checking virtual versions in: %s"
+                     :start-write "Resolving virtual versions in: %s"
+                     :no-changes "  No virtual versions found"}
+   :update-old {:start-read-only "Checking for old versions in: %s"
+                :start-write "Updating old versions in: %s"
+                :no-changes "  All up to date!"}})
+
 (defn -main [& args]
   (let [{{:keys [aliases consider-types overrides every help write resolve-virtual]} :options
          files :arguments
@@ -49,10 +57,11 @@
       :else
       (let [files (if (seq files) files ["deps.edn"])
             overrides (or (when every true) overrides)
-            check-alias? (if every (constantly true) (set aliases))]
+            check-alias? (if every (constantly true) (set aliases))
+            messages (:update-old messages)]
         (when (and every aliases)
           (println "--every and --aliases are mutually exclusive.")
           (System/exit 1))
-        (run! #(update/apply-new-versions % consider-types check-alias? overrides write)
+        (run! #(update/apply-new-versions % consider-types check-alias? overrides write messages)
               files)))
     (shutdown-agents)))
