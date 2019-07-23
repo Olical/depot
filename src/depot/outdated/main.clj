@@ -38,6 +38,7 @@
       help
       (do
         (println "USAGE: clojure -m depot.outdated.main [OPTIONS] [FILES]\n")
+        (println " If no files are given, defaults to using \"deps.edn\".\n")
         (println summary))
 
       resolve-virtual
