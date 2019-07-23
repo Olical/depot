@@ -24,6 +24,7 @@
     :default #{:release}
     :default-desc "release"
     :parse-fn comma-str->keywords-set
+    ;; TODO: check the :errors after parsing for this error
     :validate [#(set/subset? % depot/version-types) (str "Must be subset of " depot/version-types)]]
    ["-o" "--overrides" "Consider overrides for updates instead of pinning to them."]
    ["-u" "--update" "Update deps.edn, or filenames given as additional command line arguments."]
