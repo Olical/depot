@@ -26,12 +26,12 @@
     :validate [#(set/subset? % depot/version-types) (str "Must be subset of " depot/version-types)]]
    ["-o" "--overrides" "Consider overrides for updates instead of pinning to them."]
    ["-e" "--every" "Expand search to all aliases, include overrides."]
-   ["-u" "--update" "Update deps.edn, or filenames given as additional command line arguments."]
+   ["-w" "--write" "Instead of just printing changes, write them back to the file."]
    ["-r" "--resolve-virtual" "Convert -SNAPSHOT/RELEASE/LATEST versions into immutable references."]
    ["-h" "--help"]])
 
 (defn -main [& args]
-  (let [{{:keys [aliases consider-types overrides every help update resolve-virtual]} :options
+  (let [{{:keys [aliases consider-types overrides every help write resolve-virtual]} :options
          files :arguments
          summary :summary} (cli/parse-opts args cli-options)]
     (cond
@@ -53,6 +53,6 @@
         (when (and every aliases)
           (println "--every and --aliases are mutually exclusive.")
           (System/exit 1))
-        (run! #(depot.outdated.update/apply-new-versions % consider-types check-alias? overrides update)
+        (run! #(depot.outdated.update/apply-new-versions % consider-types check-alias? overrides write)
               files)))
     (shutdown-agents)))
