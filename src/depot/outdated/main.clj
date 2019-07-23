@@ -17,8 +17,6 @@
 
 (def cli-options
   [["-a" "--aliases ALIASES" "Comma list of aliases to use when reading deps.edn"
-    :default #{}
-    :default-desc ""
     :parse-fn comma-str->keywords-set]
    ["-t" "--consider-types TYPES" (str "Comma list of version types to consider out of " version-types-str)
     :default #{:release}
@@ -27,12 +25,13 @@
     ;; TODO: check the :errors after parsing for this error
     :validate [#(set/subset? % depot/version-types) (str "Must be subset of " depot/version-types)]]
    ["-o" "--overrides" "Consider overrides for updates instead of pinning to them."]
+   ["-e" "--every" "Expand search to all aliases, include overrides."]
    ["-u" "--update" "Update deps.edn, or filenames given as additional command line arguments."]
    ["-r" "--resolve-virtual" "Convert -SNAPSHOT/RELEASE/LATEST versions into immutable references."]
    ["-h" "--help"]])
 
 (defn -main [& args]
-  (let [{{:keys [aliases consider-types overrides help update resolve-virtual]} :options
+  (let [{{:keys [aliases consider-types overrides every help update resolve-virtual]} :options
          files :arguments
          summary :summary} (cli/parse-opts args cli-options)]
     (cond
@@ -47,7 +46,12 @@
         (depot.outdated.resolve-virtual/update-deps-edn! "deps.edn"))
 
       :else
-      (let [files (if (seq files) files ["deps.edn"])]
-        (run! #(depot.outdated.update/apply-new-versions % consider-types aliases overrides update)
+      (let [files (if (seq files) files ["deps.edn"])
+            overrides (or (when every true) overrides)
+            check-alias? (if every (constantly true) (set aliases))]
+        (when (and every aliases)
+          (println "--every and --aliases are mutually exclusive.")
+          (System/exit 1))
+        (run! #(depot.outdated.update/apply-new-versions % consider-types check-alias? overrides update)
               files)))
     (shutdown-agents)))
