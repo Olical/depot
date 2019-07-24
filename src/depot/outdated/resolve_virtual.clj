@@ -15,6 +15,23 @@
         request      (org.eclipse.aether.resolution.VersionRequest. artifact remote-repos nil)]
     (.getVersion (.resolveVersion system session request))))
 
+(defn pinned-versions
+  [loc {:keys [repos]}]
+  (let [deps (->> (dzip/lib-loc-seq loc)
+                  (filter (fn [loc]
+                            (and (not (dzip/ignore-loc? loc))
+                                 (not (dzip/ignore-loc? (dzip/right loc))))))
+                  (map dzip/loc->lib)
+                  doall)]
+    (into {}
+          (map (fn [[artifact coords]]
+                 (when-let [mvn-version (:mvn/version coords)]
+                   (when (some (partial str/ends-with? mvn-version) ["-SNAPSHOT" "LATEST" "RELEASE"])
+                     [artifact {:version-key :mvn/version
+                                :old-version mvn-version
+                                :new-version (resolve-version artifact coords repos)}]))))
+          deps)))
+
 (defn resolve-all
   [loc repos]
   (dzip/transform-libs
