@@ -9,15 +9,3 @@
 
 (def REPOS {:mvn/repos maven/standard-repos})
 
-(deftest update-loc?-test
-  (testing "don't update when tagged with :depot/ignore"
-    (is (false? (u/update-loc?
-                 (rzip/find-value (rzip/of-string "{:aliases {:dev ^:depot/ignore {:deps {foo/bar {}}}}} :test {:deps {baz/baq {}}}")
-                                  rzip/next
-                                  'foo/bar)))))
-
-  (testing "do update by default"
-    (is (true? (u/update-loc?
-                (rzip/find-value (rzip/of-string "{:aliases {:dev ^:depot/ignore {:deps {foo/bar {}}}}} :test {:deps {baz/baq {}}}")
-                                 rzip/next
-                                 'baz/baq))))))

@@ -101,3 +101,16 @@
              rzip/right
              rzip/down)
          (second loc-seq)))))
+
+(deftest ignore-loc?-test
+  (testing "don't update when tagged with :depot/ignore"
+    (is (true? (u/ignore-loc?
+                 (rzip/find-value (rzip/of-string "{:aliases {:dev ^:depot/ignore {:deps {foo/bar {}}}}} :test {:deps {baz/baq {}}}")
+                                  rzip/next
+                                  'foo/bar)))))
+
+  (testing "do update by default"
+    (is (false? (u/ignore-loc?
+                (rzip/find-value (rzip/of-string "{:aliases {:dev ^:depot/ignore {:deps {foo/bar {}}}}} :test {:deps {baz/baq {}}}")
+                                 rzip/next
+                                 'baz/baq))))))

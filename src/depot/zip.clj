@@ -119,6 +119,16 @@
         (recur (right (right v)) (rzip/up v))
         (recur (right (right loc)) parent)))))
 
+(defn ignore-loc?
+  "Should the version at the current position be ignored?
+  Returns true if any ancestor has the `^:depot/ignore` metadata."
+  [loc]
+  (boolean
+   (rzip/find loc
+              rzip/up
+              (fn [loc]
+                (:depot/ignore (meta (rzip/sexpr loc)))))))
+
 ;; TODO make sure this only matches map keys
 (defn lib?
   "Is the loc at a library name."

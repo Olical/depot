@@ -11,15 +11,6 @@
     ;; pre Clojure 1.9
     `(do ~@body)))
 
-(defn update-loc?
-  "Should the version at the current position be updated?
-  Returns true unless any ancestor has the `^:depot/ignore` metadata."
-  [loc]
-  (not (rzip/find loc
-                  rzip/up
-                  (fn [loc]
-                    (:depot/ignore (meta (rzip/sexpr loc)))))))
-
 (defn- new-versions
   "Find all deps in a `:deps` or `:extra-deps` or `:override-deps` map to be updated,
   at the top level and in aliases.
@@ -28,8 +19,8 @@
   [loc {:keys [consider-types repos]}]
   (let [deps (->> (dzip/lib-loc-seq loc)
                   (filter (fn [loc]
-                            (and (update-loc? loc)
-                                 (update-loc? (dzip/right loc)))))
+                            (and (not (dzip/ignore-loc? loc))
+                                 (not (dzip/ignore-loc? (dzip/right loc))))))
                   (map dzip/loc->lib)
                   doall)]
     (into {}
