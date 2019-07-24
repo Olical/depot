@@ -25,7 +25,7 @@
   at the top level and in aliases.
 
   `loc` points at the top level map."
-  [loc consider-types repos]
+  [loc {:keys [consider-types repos]}]
   (let [deps (->> (dzip/lib-loc-seq loc)
                   (filter (fn [loc]
                             (and (update-loc? loc)
@@ -131,7 +131,8 @@
         repos    (select-keys deps [:mvn/repos :mvn/local-repo])
         loc      (rzip/of-file file)
         old-deps (slurp file)
-        new-versions (new-versions loc consider-types repos)
+        new-versions (new-versions loc {:consider-types consider-types
+                                        :repos repos})
         loc'     (-> loc
                      (apply-top-level-deps (partial apply-new-version new-versions))
                      (apply-aliases-deps include-alias?
