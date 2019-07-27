@@ -119,7 +119,7 @@
   (let [start-message ((if write? :start-write :start-read-only) messages)]
     (printf (str start-message "\n") file))
   (let [deps (reader/read-deps (reader/default-deps))
-        repos    (select-keys deps [:mvn/repos :mvn/local-repo])
+        repos    (select-keys deps [:mvn/repos :depot/local-maven-repo])
         loc      (rzip/of-file file)
         old-deps (slurp file)
         new-versions (new-versions loc {:consider-types consider-types
