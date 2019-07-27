@@ -16,7 +16,7 @@
   at the top level and in aliases.
 
   `loc` points at the top level map."
-  [loc {:keys [consider-types repos]}]
+  [loc config]
   (let [deps (->> (dzip/lib-loc-seq loc)
                   (filter (fn [loc]
                             (and (not (dzip/ignore-loc? loc))
@@ -30,8 +30,7 @@
                             (some-> coords :sha (vector :sha)))
                         new-version (-> (depot/current-latest-map artifact
                                                                   coords
-                                                                  {:consider-types consider-types
-                                                                   :deps-map repos})
+                                                                  config)
                                         (get "Latest"))]
                     (when (and old-version
                                ;; ignore these Maven 2 legacy identifiers
@@ -119,11 +118,12 @@
   (let [start-message ((if write? :start-write :start-read-only) messages)]
     (printf (str start-message "\n") file))
   (let [deps (reader/read-deps (reader/default-deps))
-        repos    (select-keys deps [:mvn/repos :depot/local-maven-repo])
+        config (-> deps
+                   (select-keys [:mvn/repos :depot/local-maven-repo])
+                   (assoc :consider-types consider-types))
         loc      (rzip/of-file file)
         old-deps (slurp file)
-        new-versions (new-versions loc {:consider-types consider-types
-                                        :repos repos})
+        new-versions (new-versions loc config)
         loc'     (-> loc
                      (apply-top-level-deps (partial apply-new-version new-versions))
                      (apply-aliases-deps include-alias?

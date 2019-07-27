@@ -59,8 +59,8 @@
   nil)
 
 (defmethod -current-latest-map :mvn
-  [lib coord {:keys [deps-map consider-types]}]
-  (let [{:keys [types selected]} (coord->version-status lib coord deps-map)
+  [lib coord {:keys [consider-types] :as config}]
+  (let [{:keys [types selected]} (coord->version-status lib coord config)
         latest                   (find-latest types consider-types)]
     (when (and (not (str/blank? selected))
                (not (str/blank? latest))
@@ -98,8 +98,8 @@
 (defn current-latest-map
   "Returns a map containing `'Current'` and `'Latest'` if the dependency has a
   newer version otherwise returns `nil`."
-  [lib coord data]
-  (-current-latest-map lib coord data))
+  [lib coord config]
+  (-current-latest-map lib coord config))
 
 (defn gather-outdated [consider-types aliases include-overrides]
   (let [deps-map (-> (reader/default-deps)

@@ -16,7 +16,7 @@
     (.getVersion (.resolveVersion system session request))))
 
 (defn pinned-versions
-  [loc deps-edn]
+  [loc config]
   (let [deps (->> (dzip/lib-loc-seq loc)
                   (filter (fn [loc]
                             (and (not (dzip/ignore-loc? loc))
@@ -29,11 +29,11 @@
                    (when (some (partial str/ends-with? mvn-version) ["-SNAPSHOT" "LATEST" "RELEASE"])
                      [artifact {:version-key :mvn/version
                                 :old-version mvn-version
-                                :new-version (resolve-version artifact coords deps-edn)}]))))
+                                :new-version (resolve-version artifact coords config)}]))))
           deps)))
 
 (defn resolve-all
-  [loc deps-edn]
+  [loc config]
   (dzip/transform-libs
    loc
    (fn [loc]
@@ -42,7 +42,7 @@
            coords (rzip/sexpr coords-loc)]
        (if-let [mvn-version (:mvn/version coords)]
          (if (some (partial str/ends-with? mvn-version) ["-SNAPSHOT" "LATEST" "RELEASE"])
-           (let [version (resolve-version artifact coords deps-edn)]
+           (let [version (resolve-version artifact coords config)]
              (println "   " artifact (:mvn/version coords) "-->" version)
              (dzip/zassoc coords-loc :mvn/version version))
            coords-loc)
