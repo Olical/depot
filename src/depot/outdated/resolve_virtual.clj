@@ -7,16 +7,16 @@
             [clojure.tools.deps.alpha.util.maven :as maven]
             [clojure.string :as str]))
 
-(defn resolve-version [lib coord repos]
+(defn resolve-version [lib coord {:keys [mvn/repos depot/local-maven-repo]}]
   (let [artifact     (maven/coord->artifact lib coord)
         system       (maven/make-system)
-        session      (outdated/make-session system maven/default-local-repo)
+        session      (outdated/make-session system (or local-maven-repo maven/default-local-repo))
         remote-repos (mapv maven/remote-repo repos)
         request      (org.eclipse.aether.resolution.VersionRequest. artifact remote-repos nil)]
     (.getVersion (.resolveVersion system session request))))
 
 (defn pinned-versions
-  [loc {:keys [repos]}]
+  [loc deps-edn]
   (let [deps (->> (dzip/lib-loc-seq loc)
                   (filter (fn [loc]
                             (and (not (dzip/ignore-loc? loc))
@@ -29,11 +29,11 @@
                    (when (some (partial str/ends-with? mvn-version) ["-SNAPSHOT" "LATEST" "RELEASE"])
                      [artifact {:version-key :mvn/version
                                 :old-version mvn-version
-                                :new-version (resolve-version artifact coords repos)}]))))
+                                :new-version (resolve-version artifact coords deps-edn)}]))))
           deps)))
 
 (defn resolve-all
-  [loc repos]
+  [loc deps-edn]
   (dzip/transform-libs
    loc
    (fn [loc]
@@ -42,7 +42,7 @@
            coords (rzip/sexpr coords-loc)]
        (if-let [mvn-version (:mvn/version coords)]
          (if (some (partial str/ends-with? mvn-version) ["-SNAPSHOT" "LATEST" "RELEASE"])
-           (let [version (resolve-version artifact coords repos)]
+           (let [version (resolve-version artifact coords deps-edn)]
              (println "   " artifact (:mvn/version coords) "-->" version)
              (dzip/zassoc coords-loc :mvn/version version))
            coords-loc)
@@ -53,7 +53,7 @@
   (let [deps     (-> (reader/default-deps) reader/read-deps)
         loc      (rzip/of-file file)
         old-deps (slurp file)
-        loc'     (resolve-all loc (:mvn/repos deps))
+        loc'     (resolve-all loc (select-keys deps [:mvn/repos :depot/local-maven-repo]))
         new-deps (rzip/root-string loc')]
     (when (and loc' new-deps) ;; defensive check to prevent writing an empty deps.edn
       (if (= old-deps new-deps)

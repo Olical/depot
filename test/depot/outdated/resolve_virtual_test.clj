@@ -24,5 +24,5 @@ cider/piggieback {:mvn/version \"0.4.1-SNAPSHOT\"}}}"
   (is
    (str/starts-with? (r/resolve-version 'cider/piggieback
                                         {:mvn/version "0.4.1-SNAPSHOT"}
-                                        maven/standard-repos)
+                                        {:mvn/repos maven/standard-repos})
                      "0.4.1-20")))
