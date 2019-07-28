@@ -1,9 +1,8 @@
 (ns depot.outdated
   (:require [clojure.java.shell :as sh]
             [clojure.string :as str]
-            [clojure.tools.deps.alpha :as deps]
+            [clojure.tools.deps.alpha] ;; need for multimethods
             [clojure.tools.deps.alpha.extensions :as ext]
-            [clojure.tools.deps.alpha.reader :as reader]
             [clojure.tools.deps.alpha.util.maven :as maven]
             [version-clj.core :as version])
   (:import org.apache.maven.repository.internal.MavenRepositorySystemUtils

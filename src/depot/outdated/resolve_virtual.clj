@@ -1,9 +1,6 @@
 (ns depot.outdated.resolve-virtual
-  (:require [clojure.tools.deps.alpha.reader :as reader]
-            [depot.zip :as dzip]
+  (:require [depot.zip :as dzip]
             [depot.outdated :as outdated]
-            [rewrite-clj.zip :as rzip]
-            [clojure.zip :as zip]
             [clojure.tools.deps.alpha.util.maven :as maven]
             [clojure.string :as str]))
 

@@ -1,6 +1,5 @@
 (ns depot.outdated.main
-  (:require [clojure.pprint :as pprint]
-            [clojure.set :as set]
+  (:require [clojure.set :as set]
             [clojure.string :as str]
             [clojure.tools.cli :as cli]
             [depot.outdated :as depot]
