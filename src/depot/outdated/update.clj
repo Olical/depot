@@ -11,7 +11,7 @@
     ;; pre Clojure 1.9
     `(do ~@body)))
 
-(defn- new-versions
+(defn new-versions
   "Find all deps in a `:deps` or `:extra-deps` or `:override-deps` map to be updated,
   at the top level and in aliases.
 
@@ -114,7 +114,7 @@
                    alias-map)))
 
 (defn apply-new-versions
-  [file consider-types include-alias? include-override-deps? write? messages]
+  [file consider-types include-alias? include-override-deps? write? messages new-versions]
   (let [start-message ((if write? :start-write :start-read-only) messages)]
     (printf (str start-message "\n") file))
   (let [deps (reader/read-deps (reader/default-deps))
