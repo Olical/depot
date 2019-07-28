@@ -100,22 +100,3 @@
   newer version otherwise returns `nil`."
   [lib coord config]
   (-current-latest-map lib coord config))
-
-(defn gather-outdated [consider-types aliases include-overrides]
-  (let [deps-map (-> (reader/default-deps)
-                     (reader/read-deps))
-        args-map (deps/combine-aliases deps-map aliases)
-        overrides (:override-deps args-map)
-        all-deps (merge (:deps deps-map) (:extra-deps args-map)
-                        (when include-overrides overrides))]
-    (->> (pmap (fn [[lib coord]]
-                 (let [outdated (current-latest-map lib
-                                                    (if include-overrides
-                                                      coord
-                                                      (get overrides lib coord))
-                                                    {:consider-types consider-types
-                                                     :deps-map       deps-map})]
-                   (when outdated
-                     (assoc outdated "Dependency" lib)))) all-deps)
-         (keep identity)
-         (sort-by #(get % "Dependency")))))
