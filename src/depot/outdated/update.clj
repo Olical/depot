@@ -64,38 +64,30 @@
      dzip/left)))
 
 (defn- apply-to-deps-map
-  "Given a `loc` pointing at a map and f apply
-  to every dependency in the map."
-  [loc f]
-  (dzip/map-keys f loc))
+  "Given an `loc` pointing at a map, navigate to the sub-map at k, and apply f
+  to every key in it. Returns an `loc` at the 'same' point in the tree."
+  [loc k f]
+  (-> loc
+      (dzip/zget k)
+      dzip/enter-meta
+      (as-> % (dzip/map-keys f %))
+      dzip/exit-meta
+      rzip/up))
 
 (defn- apply-top-level-deps
   "Given a root `loc`, and a new-versions map, apply f
    to the top-level dependencies."
   [loc f]
-  (-> loc
-      (dzip/zget :deps)
-      dzip/enter-meta
-      (apply-to-deps-map f)
-      dzip/exit-meta
-      rzip/up))
+  (apply-to-deps-map loc :deps f))
 
 (defn- apply-alias-deps
   [loc include-override-deps? f]
   (cond-> loc
     (dzip/zget loc :extra-deps)
-    (-> (dzip/zget :extra-deps)
-        dzip/enter-meta
-        (apply-to-deps-map f)
-        dzip/exit-meta
-        rzip/up)
+    (apply-to-deps-map :extra-deps f)
 
     (and include-override-deps? (dzip/zget loc :override-deps))
-    (-> (dzip/zget :override-deps)
-        dzip/enter-meta
-        (apply-to-deps-map f)
-        dzip/exit-meta
-        rzip/up)))
+    (apply-to-deps-map :override-deps f)))
 
 (defn- apply-aliases-deps
   "`loc` points to the root of the deps.edn file."
