@@ -169,11 +169,11 @@
 
 (defn- apply-aliases-deps
   "`loc` points to the root of the deps.edn file."
-  [loc aliases include-override-deps? new-versions]
+  [loc include-alias? include-override-deps? new-versions]
   (let [alias-map (dzip/zget loc :aliases)]
     (dzip/map-keys (fn [loc]
                      (let [alias-name (rzip/sexpr loc)]
-                       (if (contains? aliases alias-name)
+                       (if (include-alias? alias-name)
                          (-> loc
                              rzip/right
                              dzip/enter-meta
@@ -184,7 +184,7 @@
                    alias-map)))
 
 (defn apply-new-versions
-  [file consider-types aliases include-override-deps? write?]
+  [file consider-types include-alias? include-override-deps? write?]
   (let [action (if write? "Updating" "Checking")]
     (printf "%s: %s\n" action file))
   (let [deps (reader/read-deps (reader/default-deps))
@@ -194,7 +194,7 @@
         new-versions (new-versions loc consider-types repos)
         loc'     (-> loc
                      (apply-top-level-deps new-versions)
-                     (apply-aliases-deps aliases include-override-deps? new-versions))
+                     (apply-aliases-deps include-alias? include-override-deps? new-versions))
         new-deps (rzip/root-string loc')]
     (when (and loc' new-deps) ;; defensive check to prevent writing an empty deps.edn
       (if (= old-deps new-deps)
