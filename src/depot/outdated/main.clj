@@ -4,8 +4,8 @@
             [clojure.string :as str]
             [clojure.tools.cli :as cli]
             [depot.outdated :as depot]
-            [depot.outdated.update]
-            [depot.outdated.resolve-virtual]))
+            [depot.outdated.update :as update]
+            [depot.outdated.resolve-virtual :as resolve-virtual]))
 
 (defn comma-str->keywords-set [comma-str]
   (into #{} (map keyword) (str/split comma-str #",")))
@@ -43,8 +43,8 @@
 
       resolve-virtual
       (if (seq files)
-        (run! depot.outdated.resolve-virtual/update-deps-edn! files)
-        (depot.outdated.resolve-virtual/update-deps-edn! "deps.edn"))
+        (run! resolve-virtual/update-deps-edn! files)
+        (resolve-virtual/update-deps-edn! "deps.edn"))
 
       :else
       (let [files (if (seq files) files ["deps.edn"])
@@ -53,6 +53,6 @@
         (when (and every aliases)
           (println "--every and --aliases are mutually exclusive.")
           (System/exit 1))
-        (run! #(depot.outdated.update/apply-new-versions % consider-types check-alias? overrides write)
+        (run! #(update/apply-new-versions % consider-types check-alias? overrides write)
               files)))
     (shutdown-agents)))
