@@ -17,29 +17,23 @@
 
   `loc` points at the top level map."
   [loc config]
-  (let [deps (->> (dzip/lib-loc-seq loc)
-                  (filter (fn [loc]
-                            (and (not (dzip/ignore-loc? loc))
-                                 (not (dzip/ignore-loc? (dzip/right loc))))))
-                  (map dzip/loc->lib)
-                  doall)]
-    (into {}
-          (pmap (fn [[artifact coords]]
-                  (let [[old-version version-key]
-                        (or (some-> coords :mvn/version (vector :mvn/version))
-                            (some-> coords :sha (vector :sha)))
-                        new-version (-> (depot/current-latest-map artifact
-                                                                  coords
-                                                                  config)
-                                        (get "Latest"))]
-                    (when (and old-version
-                               ;; ignore these Maven 2 legacy identifiers
-                               (not (#{"RELEASE" "LATEST"} old-version))
-                               new-version)
-                      [artifact {:version-key version-key
-                                 :old-version old-version
-                                 :new-version new-version}])))
-                deps))))
+  (dzip/mapped-libs
+   loc
+   (fn [artifact coords]
+     (let [[old-version version-key]
+           (or (some-> coords :mvn/version (vector :mvn/version))
+               (some-> coords :sha (vector :sha)))
+           new-version (-> (depot/current-latest-map artifact
+                                                     coords
+                                                     config)
+                           (get "Latest"))]
+       (when (and old-version
+                  ;; ignore these Maven 2 legacy identifiers
+                  (not (#{"RELEASE" "LATEST"} old-version))
+                  new-version)
+         {:version-key version-key
+          :old-version old-version
+          :new-version new-version})))))
 
 (defn- apply-new-version
   [new-versions loc]

@@ -177,3 +177,19 @@
       (let [loc (-> (apply f loc' args) znext)]
         (recur loc (next-lib loc)))
       loc)))
+
+(defn mapped-libs
+  "Find every unignored dep in a `:deps` or `:extra-deps` or `:override-deps` map, at
+   the top level and in aliases, and return a map of artifact to output of
+  (f artifact coords). f must be free of side-effects.
+
+  `loc` points at the top level map."
+  [loc f]
+  (->> (lib-loc-seq loc)
+       (filter (fn [loc]
+                 (and (not (ignore-loc? loc))
+                      (not (ignore-loc? (right loc))))))
+       (map loc->lib)
+       (pmap (fn [[artifact coords]]
+               [artifact (f artifact coords)]))
+       (into {})))

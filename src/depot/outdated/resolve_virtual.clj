@@ -13,19 +13,17 @@
     (.getVersion (.resolveVersion system session request))))
 
 (defn pinned-versions
+  "Find all deps in a `:deps` or `:extra-deps` or `:override-deps` map to be pinned,
+  at the top level and in aliases.
+
+  `loc` points at the top level map."
   [loc config]
-  (let [deps (->> (dzip/lib-loc-seq loc)
-                  (filter (fn [loc]
-                            (and (not (dzip/ignore-loc? loc))
-                                 (not (dzip/ignore-loc? (dzip/right loc))))))
-                  (map dzip/loc->lib)
-                  doall)]
-    (into {}
-          (map (fn [[artifact coords]]
-                 (when-let [mvn-version (:mvn/version coords)]
-                   (when (some (partial str/ends-with? mvn-version) ["-SNAPSHOT" "LATEST" "RELEASE"])
-                     [artifact {:version-key :mvn/version
-                                :old-version mvn-version
-                                :new-version (resolve-version artifact coords config)}]))))
-          deps)))
+  (dzip/mapped-libs
+   loc
+   (fn [artifact coords]
+     (when-let [mvn-version (:mvn/version coords)]
+       (when (some (partial str/ends-with? mvn-version) ["-SNAPSHOT" "LATEST" "RELEASE"])
+         {:version-key :mvn/version
+          :old-version mvn-version
+          :new-version (resolve-version artifact coords config)})))))
 

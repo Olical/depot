@@ -114,3 +114,17 @@
                 (rzip/find-value (rzip/of-string "{:aliases {:dev ^:depot/ignore {:deps {foo/bar {}}}}} :test {:deps {baz/baq {}}}")
                                  rzip/next
                                  'baz/baq))))))
+
+(deftest mapped-libs-test
+  (let [loc (rzip/edn
+             (node/coerce
+              '{:deps {org.clojure/clojure {:mvn/version "1.10.1"}}
+                :aliases {:dev {:extra-deps {foo.bar {:git/sha "abiglonghash"}}}
+                          :test {:extra-deps {foo.baz {:mvn/version "1.2.3"}}
+                                 :override-deps {foo.baz.sublib {:mvn/version "1.2.2"}}}}}))]
+    (is (= '{org.clojure/clojure [org.clojure/clojure {:mvn/version "1.10.1"}]
+             foo.bar [foo.bar {:git/sha "abiglonghash"}]
+             foo.baz [foo.baz {:mvn/version "1.2.3"}]
+             foo.baz.sublib [foo.baz.sublib {:mvn/version "1.2.2"}]}
+           (u/mapped-libs loc (fn [& args] args))))
+    (is (every? nil? (vals (u/mapped-libs loc (constantly nil)))))))
