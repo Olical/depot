@@ -1,6 +1,5 @@
 (ns depot.outdated.update
   (:require [clojure.tools.deps.alpha.reader :as reader]
-            [depot.outdated :as depot]
             [depot.zip :as dzip]
             [rewrite-clj.zip :as rzip]))
 
@@ -10,30 +9,6 @@
        ~@body)
     ;; pre Clojure 1.9
     `(do ~@body)))
-
-(defn new-versions
-  "Find all deps in a `:deps` or `:extra-deps` or `:override-deps` map to be updated,
-  at the top level and in aliases.
-
-  `loc` points at the top level map."
-  [loc config]
-  (dzip/mapped-libs
-   loc
-   (fn [artifact coords]
-     (let [[old-version version-key]
-           (or (some-> coords :mvn/version (vector :mvn/version))
-               (some-> coords :sha (vector :sha)))
-           new-version (-> (depot/current-latest-map artifact
-                                                     coords
-                                                     config)
-                           (get "Latest"))]
-       (when (and old-version
-                  ;; ignore these Maven 2 legacy identifiers
-                  (not (#{"RELEASE" "LATEST"} old-version))
-                  new-version)
-         {:version-key version-key
-          :old-version old-version
-          :new-version new-version})))))
 
 (defn- apply-new-version
   [new-versions loc]

@@ -4,6 +4,7 @@
             [clojure.tools.deps.alpha] ;; need for multimethods
             [clojure.tools.deps.alpha.extensions :as ext]
             [clojure.tools.deps.alpha.util.maven :as maven]
+            [depot.zip :as dzip]
             [version-clj.core :as version])
   (:import org.apache.maven.repository.internal.MavenRepositorySystemUtils
            [org.eclipse.aether RepositorySystem RepositorySystemSession]
@@ -99,3 +100,27 @@
   newer version otherwise returns `nil`."
   [lib coord config]
   (-current-latest-map lib coord config))
+
+(defn newer-versions
+  "Find all deps in a `:deps` or `:extra-deps` or `:override-deps` map to be updated,
+  at the top level and in aliases.
+
+  `loc` points at the top level map."
+  [loc config]
+  (dzip/mapped-libs
+   loc
+   (fn [artifact coords]
+     (let [[old-version version-key]
+           (or (some-> coords :mvn/version (vector :mvn/version))
+               (some-> coords :sha (vector :sha)))
+           new-version (-> (current-latest-map artifact
+                                                     coords
+                                                     config)
+                           (get "Latest"))]
+       (when (and old-version
+                  ;; ignore these Maven 2 legacy identifiers
+                  (not (#{"RELEASE" "LATEST"} old-version))
+                  new-version)
+         {:version-key version-key
+          :old-version old-version
+          :new-version new-version})))))

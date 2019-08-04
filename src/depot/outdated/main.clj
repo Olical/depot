@@ -57,7 +57,7 @@
                        (:update-old messages))
             new-versions (if resolve-virtual
                            resolve-virtual/pinned-versions
-                           update/new-versions)]
+                           depot/newer-versions)]
         (when (and every aliases)
           (println "--every and --aliases are mutually exclusive.")
           (System/exit 1))
