@@ -65,8 +65,8 @@
     (when (and (not (str/blank? selected))
                (not (str/blank? latest))
                (= (version/version-compare latest selected) 1))
-      {"Current" selected
-       "Latest"  latest})))
+      {:current selected
+       :latest  latest})))
 
 (defn- parse-git-ls-remote
   "Returns a map of ref name to the latest sha for that ref name."
@@ -92,11 +92,11 @@
     (when (and (= exit 0)
                (neg? (ext/compare-versions
                        lib coord (assoc coord :sha latest-remote-sha) {})))
-      {"Current" (:sha coord)
-       "Latest"  latest-remote-sha})))
+      {:current (:sha coord)
+       :latest  latest-remote-sha})))
 
 (defn current-latest-map
-  "Returns a map containing `'Current'` and `'Latest'` if the dependency has a
+  "Returns a map containing `:current` and `:latest` if the dependency has a
   newer version otherwise returns `nil`."
   [lib coord config]
   (-current-latest-map lib coord config))
@@ -116,7 +116,7 @@
            new-version (-> (current-latest-map artifact
                                                      coords
                                                      config)
-                           (get "Latest"))]
+                           (get :latest))]
        (when (and old-version
                   ;; ignore these Maven 2 legacy identifiers
                   (not (#{"RELEASE" "LATEST"} old-version))
