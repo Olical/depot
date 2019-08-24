@@ -3,7 +3,6 @@
 ## Unreleased
 
 * **Breaking** Replaced the `--update` flag with the `--write` flag.
-* **Breaking** Replace support for :mvn/local-repo with :depot/local-maven-repo
 * **Breaking** Changed scoping rules to be the same with or without the `--write` flag
 * **Breaking** Changed scoping rules to be the same with or without the `--resolve-virtual` flag
 * **Breaking** Changed `--resolve-virtual` to be read-only unless combined with `--write`

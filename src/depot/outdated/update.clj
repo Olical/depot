@@ -80,7 +80,7 @@
     (printf (str start-message "\n") file))
   (let [deps (reader/read-deps (reader/default-deps))
         config (-> deps
-                   (select-keys [:mvn/repos :depot/local-maven-repo])
+                   (select-keys [:mvn/repos :mvn/local-repo])
                    (assoc :consider-types consider-types))
         loc      (rzip/of-file file)
         old-deps (slurp file)

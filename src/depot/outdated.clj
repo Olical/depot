@@ -29,8 +29,8 @@
     (.setLocalRepositoryManager session local-repo-mgr)
     session))
 
-(defn coord->version-status [lib coord {:keys [mvn/repos depot/local-maven-repo]}]
-  (let [local-repo (or local-maven-repo maven/default-local-repo)
+(defn coord->version-status [lib coord {:keys [mvn/repos mvn/local-repo]}]
+  (let [local-repo (or local-repo maven/default-local-repo)
         remote-repos (mapv maven/remote-repo repos)
         system (maven/make-system)
         session (make-session system local-repo)

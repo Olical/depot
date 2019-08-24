@@ -4,10 +4,10 @@
             [clojure.tools.deps.alpha.util.maven :as maven]
             [clojure.string :as str]))
 
-(defn resolve-version [lib coord {:keys [mvn/repos depot/local-maven-repo]}]
+(defn resolve-version [lib coord {:keys [mvn/repos mvn/local-repo]}]
   (let [artifact     (maven/coord->artifact lib coord)
         system       (maven/make-system)
-        session      (outdated/make-session system (or local-maven-repo maven/default-local-repo))
+        session      (outdated/make-session system (or local-repo maven/default-local-repo))
         remote-repos (mapv maven/remote-repo repos)
         request      (org.eclipse.aether.resolution.VersionRequest. artifact remote-repos nil)]
     (.getVersion (.resolveVersion system session request))))
