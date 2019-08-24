@@ -50,17 +50,17 @@
   (apply-to-deps-map loc :deps f))
 
 (defn- apply-alias-deps
-  [loc include-override-deps? f]
+  [loc f]
   (cond-> loc
     (dzip/zget loc :extra-deps)
     (apply-to-deps-map :extra-deps f)
 
-    (and include-override-deps? (dzip/zget loc :override-deps))
+    (dzip/zget loc :override-deps)
     (apply-to-deps-map :override-deps f)))
 
 (defn- apply-aliases-deps
   "`loc` points to the root of the deps.edn file."
-  [loc include-alias? include-override-deps? f]
+  [loc include-alias? f]
   (let [alias-map (dzip/zget loc :aliases)]
     (dzip/map-keys (fn [loc]
                      (let [alias-name (rzip/sexpr loc)]
@@ -68,14 +68,14 @@
                          (-> loc
                              rzip/right
                              dzip/enter-meta
-                             (apply-alias-deps include-override-deps? f)
+                             (apply-alias-deps f)
                              dzip/exit-meta
                              rzip/left)
                          loc)))
                    alias-map)))
 
 (defn apply-new-versions
-  [file consider-types include-alias? include-override-deps? write? messages new-versions]
+  [file consider-types include-alias? write? messages new-versions]
   (let [start-message ((if write? :start-write :start-read-only) messages)]
     (printf (str start-message "\n") file))
   (let [deps (reader/read-deps (reader/default-deps))
@@ -88,7 +88,6 @@
         loc'     (-> loc
                      (apply-top-level-deps (partial apply-new-version new-versions))
                      (apply-aliases-deps include-alias?
-                                         include-override-deps?
                                          (partial apply-new-version new-versions)))
         new-deps (rzip/root-string loc')]
     (when (and loc' new-deps) ;; defensive check to prevent writing an empty deps.edn

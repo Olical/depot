@@ -23,7 +23,6 @@
     :parse-fn comma-str->keywords-set
     ;; TODO: check the :errors after parsing for this error
     :validate [#(set/subset? % depot/version-types) (str "Must be subset of " depot/version-types)]]
-   ["-o" "--overrides" "Consider overrides for updates instead of pinning to them."]
    ["-e" "--every" "Expand search to all aliases, include overrides."]
    ["-w" "--write" "Instead of just printing changes, write them back to the file."]
    ["-r" "--resolve-virtual" "Convert -SNAPSHOT/RELEASE/LATEST versions into immutable references."]
@@ -38,7 +37,7 @@
                 :no-changes "  All up to date!"}})
 
 (defn -main [& args]
-  (let [{{:keys [aliases consider-types overrides every help write resolve-virtual]} :options
+  (let [{{:keys [aliases consider-types every help write resolve-virtual]} :options
          files :arguments
          summary :summary} (cli/parse-opts args cli-options)]
     (cond
@@ -50,7 +49,6 @@
 
       :else
       (let [files (if (seq files) files ["deps.edn"])
-            overrides (or (when every true) overrides)
             check-alias? (if every (constantly true) (set aliases))
             messages (if resolve-virtual
                        (:resolve-virtual messages)
@@ -61,6 +59,6 @@
         (when (and every aliases)
           (println "--every and --aliases are mutually exclusive.")
           (System/exit 1))
-        (run! #(update/apply-new-versions % consider-types check-alias? overrides write messages new-versions)
+        (run! #(update/apply-new-versions % consider-types check-alias? write messages new-versions)
               files)))
     (shutdown-agents)))
