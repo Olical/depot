@@ -42,7 +42,7 @@ $ clojure -Aoutdated ../my-project/deps.edn
 By default, only dependencies under the top-level `:deps` are considered.
 
 To also consider `:extra-deps` and `:override-deps` under aliases, see
-the the `--aliases`, `--every`, and `--overrides` flags.
+the the `--aliases` and `--every` flags.
 
 To prevent Depot from touching certain parts of your `deps.edn`, mark
 them with the `^:depot/ignore` metadata.

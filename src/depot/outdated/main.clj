@@ -23,7 +23,7 @@
     :parse-fn comma-str->keywords-set
     ;; TODO: check the :errors after parsing for this error
     :validate [#(set/subset? % depot/version-types) (str "Must be subset of " depot/version-types)]]
-   ["-e" "--every" "Expand search to all aliases, include overrides."]
+   ["-e" "--every" "Expand search to all aliases."]
    ["-w" "--write" "Instead of just printing changes, write them back to the file."]
    ["-r" "--resolve-virtual" "Convert -SNAPSHOT/RELEASE/LATEST versions into immutable references."]
    ["-h" "--help"]])
