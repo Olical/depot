@@ -2,7 +2,7 @@
 
  :deps
  {org.clojure/clojure {:mvn/version "1.10.1"}
-  org.clojure/tools.deps.alpha {:mvn/version "0.7.541"}
+  org.clojure/tools.deps.alpha {:mvn/version "0.7.516"}
   org.clojure/tools.cli {:mvn/version "0.4.2"}
   rewrite-clj {:mvn/version "0.6.1"}
   version-clj {:mvn/version "0.1.2"}}
