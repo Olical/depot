@@ -34,6 +34,26 @@
   [loc]
   (some-> loc rzip/next (zip-skip-ws rzip/next rzip/right rzip/end?)))
 
+(defn enter-meta
+  "If the given `loc` is a meta node, navigate down to the value to which it is attached,
+  else return the `loc`."
+  [loc]
+  (if (not= :meta (rzip/tag loc))
+    loc
+    (-> loc
+        rzip/down
+        right
+        (recur))))
+
+(defn exit-meta
+  "If the given `loc`'s parent is a meta node, return the first ancestor whose parent is not,
+  else return the `loc`."
+  [loc]
+  (let [loc' (rzip/up loc)]
+    (if (= :meta (rzip/tag loc'))
+      (recur loc')
+      loc)))
+
 (defn zget
   "Like [[clojure.core/get]], but for a zipper over a map.
 
@@ -99,6 +119,16 @@
         (recur (right (right v)) (rzip/up v))
         (recur (right (right loc)) parent)))))
 
+(defn ignore-loc?
+  "Should the version at the current position be ignored?
+  Returns true if any ancestor has the `^:depot/ignore` metadata."
+  [loc]
+  (boolean
+   (rzip/find loc
+              rzip/up
+              (fn [loc]
+                (:depot/ignore (meta (rzip/sexpr loc)))))))
+
 ;; TODO make sure this only matches map keys
 (defn lib?
   "Is the loc at a library name."
@@ -147,3 +177,19 @@
       (let [loc (-> (apply f loc' args) znext)]
         (recur loc (next-lib loc)))
       loc)))
+
+(defn mapped-libs
+  "Find every unignored dep in a `:deps` or `:extra-deps` or `:override-deps` map, at
+   the top level and in aliases, and return a map of artifact to output of
+  (f artifact coords). f must be free of side-effects.
+
+  `loc` points at the top level map."
+  [loc f]
+  (->> (lib-loc-seq loc)
+       (filter (fn [loc]
+                 (and (not (ignore-loc? loc))
+                      (not (ignore-loc? (right loc))))))
+       (map loc->lib)
+       (pmap (fn [[artifact coords]]
+               [artifact (f artifact coords)]))
+       (into {})))

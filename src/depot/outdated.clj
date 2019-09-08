@@ -1,10 +1,10 @@
 (ns depot.outdated
   (:require [clojure.java.shell :as sh]
             [clojure.string :as str]
-            [clojure.tools.deps.alpha :as deps]
+            [clojure.tools.deps.alpha] ;; need for multimethods
             [clojure.tools.deps.alpha.extensions :as ext]
-            [clojure.tools.deps.alpha.reader :as reader]
             [clojure.tools.deps.alpha.util.maven :as maven]
+            [depot.zip :as dzip]
             [version-clj.core :as version])
   (:import org.apache.maven.repository.internal.MavenRepositorySystemUtils
            [org.eclipse.aether RepositorySystem RepositorySystemSession]
@@ -59,14 +59,14 @@
   nil)
 
 (defmethod -current-latest-map :mvn
-  [lib coord {:keys [deps-map consider-types]}]
-  (let [{:keys [types selected]} (coord->version-status lib coord deps-map)
+  [lib coord {:keys [consider-types] :as config}]
+  (let [{:keys [types selected]} (coord->version-status lib coord config)
         latest                   (find-latest types consider-types)]
     (when (and (not (str/blank? selected))
                (not (str/blank? latest))
                (= (version/version-compare latest selected) 1))
-      {"Current" selected
-       "Latest"  latest})))
+      {:current selected
+       :latest  latest})))
 
 (defn- parse-git-ls-remote
   "Returns a map of ref name to the latest sha for that ref name."
@@ -92,30 +92,35 @@
     (when (and (= exit 0)
                (neg? (ext/compare-versions
                        lib coord (assoc coord :sha latest-remote-sha) {})))
-      {"Current" (:sha coord)
-       "Latest"  latest-remote-sha})))
+      {:current (:sha coord)
+       :latest  latest-remote-sha})))
 
 (defn current-latest-map
-  "Returns a map containing `'Current'` and `'Latest'` if the dependency has a
+  "Returns a map containing `:current` and `:latest` if the dependency has a
   newer version otherwise returns `nil`."
-  [lib coord data]
-  (-current-latest-map lib coord data))
+  [lib coord config]
+  (-current-latest-map lib coord config))
 
-(defn gather-outdated [consider-types aliases include-overrides]
-  (let [deps-map (-> (reader/default-deps)
-                     (reader/read-deps))
-        args-map (deps/combine-aliases deps-map aliases)
-        overrides (:override-deps args-map)
-        all-deps (merge (:deps deps-map) (:extra-deps args-map)
-                        (when include-overrides overrides))]
-    (->> (pmap (fn [[lib coord]]
-                 (let [outdated (current-latest-map lib
-                                                    (if include-overrides
-                                                      coord
-                                                      (get overrides lib coord))
-                                                    {:consider-types consider-types
-                                                     :deps-map       deps-map})]
-                   (when outdated
-                     (assoc outdated "Dependency" lib)))) all-deps)
-         (keep identity)
-         (sort-by #(get % "Dependency")))))
+(defn newer-versions
+  "Find all deps in a `:deps` or `:extra-deps` or `:override-deps` map to be updated,
+  at the top level and in aliases.
+
+  `loc` points at the top level map."
+  [loc config]
+  (dzip/mapped-libs
+   loc
+   (fn [artifact coords]
+     (let [[old-version version-key]
+           (or (some-> coords :mvn/version (vector :mvn/version))
+               (some-> coords :sha (vector :sha)))
+           new-version (-> (current-latest-map artifact
+                                                     coords
+                                                     config)
+                           (get :latest))]
+       (when (and old-version
+                  ;; ignore these Maven 2 legacy identifiers
+                  (not (#{"RELEASE" "LATEST"} old-version))
+                  new-version)
+         {:version-key version-key
+          :old-version old-version
+          :new-version new-version})))))
