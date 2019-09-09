@@ -41,7 +41,8 @@
       dzip/enter-meta
       (as-> % (dzip/map-keys f %))
       dzip/exit-meta
-      rzip/up))
+      rzip/up
+      (or loc)))
 
 (defn- apply-top-level-deps
   "Given a root `loc`, and a new-versions map, apply f
@@ -51,12 +52,9 @@
 
 (defn- apply-alias-deps
   [loc f]
-  (cond-> loc
-    (dzip/zget loc :extra-deps)
-    (apply-to-deps-map :extra-deps f)
-
-    (dzip/zget loc :override-deps)
-    (apply-to-deps-map :override-deps f)))
+  (-> loc
+      (apply-to-deps-map :extra-deps f)
+      (apply-to-deps-map :override-deps f)))
 
 (defn- apply-aliases-deps
   "`loc` points to the root of the deps.edn file."
