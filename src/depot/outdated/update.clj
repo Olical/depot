@@ -59,7 +59,7 @@
 (defn- apply-aliases-deps
   "`loc` points to the root of the deps.edn file."
   [loc include-alias? f]
-  (let [alias-map (dzip/zget loc :aliases)]
+  (if-let [alias-map (dzip/zget loc :aliases)]
     (dzip/map-keys (fn [loc]
                      (let [alias-name (rzip/sexpr loc)]
                        (if (include-alias? alias-name)
@@ -70,7 +70,8 @@
                              dzip/exit-meta
                              rzip/left)
                          loc)))
-                   alias-map)))
+                   alias-map)
+    loc))
 
 (defn apply-new-versions
   [file consider-types include-alias? write? messages new-versions]
