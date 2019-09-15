@@ -16,3 +16,14 @@
            (#'u/apply-top-level-deps
             input
             identity)))))
+
+(deftest empty-coordinate-map
+  (let [loc (-> (node/coerce {'org.clojure/clojure {}})
+                rzip/edn
+                rzip/down)
+        result (#'u/apply-new-version {'org.clojure/clojure {:old-version "1.10.0"
+                                                             :new-version "1.10.1"
+                                                             :version-key :mvn/version}}
+                                      loc)]
+    (is (= loc
+           result))))
