@@ -20,7 +20,7 @@
          new-version :new-version
          old-version :old-version :as v} (get new-versions artifact)]
     (->
-     (if v
+     (if (and v (seq (rzip/sexpr coords-loc)))
        (with-print-namespace-maps false
          (println " "
                   artifact
