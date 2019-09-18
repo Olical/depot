@@ -20,15 +20,15 @@
          new-version :new-version
          old-version :old-version :as v} (get new-versions artifact)]
     (->
-     (if (not v)
-       coords-loc
-       (do (with-print-namespace-maps false
-             (println " "
-                      artifact
-                      (pr-str {version-key old-version})
-                      "->"
-                      (pr-str {version-key new-version})))
-           (dzip/zassoc coords-loc version-key new-version)))
+     (if v
+       (with-print-namespace-maps false
+         (println " "
+                  artifact
+                  (pr-str {version-key old-version})
+                  "->"
+                  (pr-str {version-key new-version}))
+         (dzip/zassoc coords-loc version-key new-version))
+       coords-loc)
      dzip/exit-meta
      dzip/left)))
 
