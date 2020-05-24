@@ -11,7 +11,7 @@
  {:cider
   {:extra-paths ["dev"]
    :extra-deps {org.clojure/tools.nrepl {:mvn/version "0.2.13"}
-                cider/cider-nrepl {:mvn/version "0.22.2"}}
+                cider/cider-nrepl {:mvn/version "0.24.0"}}
    :main-opts ["-m" "depot.dev.cider"]}
 
   :prepl
@@ -19,10 +19,11 @@
 
   :test
   {:extra-deps {;; Only here to check depot functionality.
-                clj-time {:mvn/version "0.14.4"}
-                cider/cider-nrepl {:mvn/version "0.18.0-SNAPSHOT"}
+                org.slf4j/slf4j-simple {:mvn/version "1.7.30"}
+                clj-time {:mvn/version "0.15.2"}
+                cider/cider-nrepl {:mvn/version "0.22.0"}
                 olical/cljs-test-runner {:git/url "https://github.com/Olical/cljs-test-runner.git"
                                          :sha "5a18d41648d5c3a64632b5fec07734d32cca7671"}
 
                 ;; Actually here to run tests.
-                lambdaisland/kaocha {:mvn/version "0.0-409"}}}}}
+                lambdaisland/kaocha {:mvn/version "1.0.632"}}}}}
