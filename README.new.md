@@ -106,6 +106,7 @@ This project is inspired by [lein-ancient][], it relies on [version-clj][] (by t
  * [@plexus](https://github.com/plexus) - Both the `--update` and `--resolve-virtual` systems, so many improvements!
  * [@robert-stuttaford](https://github.com/robert-stuttaford) - Presenting results in a neat table.
  * [@seancorfield](https://github.com/seancorfield) - Support for `:override-deps`.
+ * @dharrigan - Bump deps
 
 ## Unlicenced
 
