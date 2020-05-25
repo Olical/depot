@@ -2,14 +2,15 @@
 
 ## v2.0.0 (unreleased)
 
-* **Breaking** Replaced the `--update` flag with the `--write` flag.
-* **Breaking** Changed scoping rules to be the same with or without the `--write` flag
-* **Breaking** Remove support for the `--overrides` flag. `:override-deps` will be checked by default.
-  To ignore them, use the `:depot/ignore` metadata.
-* **Breaking** Changed scoping rules to be the same with or without the `--resolve-virtual` flag
-* **Breaking** Changed `--resolve-virtual` to be read-only unless combined with `--write`
-* Fixed inconsistent output styles
-* Added the `--every` flag which allows checking all aliases at once
+ * **Breaking** Replaced the `--update` flag with the `--write` flag.
+ * **Breaking** Changed scoping rules to be the same with or without the `--write` flag
+ * **Breaking** Remove support for the `--overrides` flag. `:override-deps` will be checked by default.
+   To ignore them, use the `:depot/ignore` metadata.
+ * **Breaking** Changed scoping rules to be the same with or without the `--resolve-virtual` flag
+ * **Breaking** Changed `--resolve-virtual` to be read-only unless combined with `--write`
+ * Fixed inconsistent output styles
+ * Added the `--every` flag which allows checking all aliases at once
+ * Bump various dependencies.
 
 ## v1.8.4
 
