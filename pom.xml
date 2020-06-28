@@ -43,19 +43,6 @@
       <version>0.1.2</version>
     </dependency>
   </dependencies>
-  <build>
-    <build>
-      <sourceDirectory>src</sourceDirectory>
-    </build>
-    <resources>
-      <resource>
-        <directory>src</directory>
-      </resource>
-    </resources>
-    <build>
-      <sourceDirectory>src</sourceDirectory>
-    </build>
-  </build>
   <repositories>
     <repository>
       <id>clojars</id>
