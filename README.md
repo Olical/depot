@@ -2,7 +2,7 @@
 
 > Warning: I'm not actively maintaining this project, I'm finally releasing `v2.0.0` since it's been sitting around for far too long. It contains a bunch of breaking changes that are mentioned in `CHANGES.md`.
 >
-> You may have better luck with [liquidz/antq](https://github.com/liquidz/antq) or [slipset/deps-ancient](https://github.com/slipset/deps-ancient).
+> You may have better luck with [liquidz/antq](https://github.com/liquidz/antq) or [slipset/deps-ancient](https://github.com/slipset/deps-ancient). If you'd like to see this project developed and maintained further I'm open to inviting other maintainers or promoting forks. I'm reluctant to transfer ownership and publishing rights to the artifact since that's been used for malicious purposes in recent times.
 >
 > If this version isn't to your liking you can still rely on `v1.8.4` (or earlier) and the legacy documentation in `README-v1.md`.
 
