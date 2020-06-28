@@ -4,7 +4,7 @@
 >
 > You may have better luck with [liquidz/antq](https://github.com/liquidz/antq) or [slipset/deps-ancient](https://github.com/slipset/deps-ancient).
 >
-> If this version isn't to your liking you can still rely on `v1.8.4` (or before) and the old documentation in `README-v1.md`.
+> If this version isn't to your liking you can still rely on `v1.8.4` (or earlier) and the legacy documentation in `README-v1.md`.
 
 Find newer versions of your dependencies in your `deps.edn` file using the [Clojure CLI][cli]. This works for maven _and_ git dependencies.
 
