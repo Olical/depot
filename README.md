@@ -1,5 +1,11 @@
 # Depot [![Clojars Project](https://img.shields.io/clojars/v/olical/depot.svg)](https://clojars.org/olical/depot)
 
+> Warning: I'm not actively maintaining this project, I'm finally releasing `v2.0.0` since it's been sitting around for far too long. It contains a bunch of breaking changes that are mentioned in `CHANGES.md`.
+>
+> You may have better luck with [liquidz/antq](https://github.com/liquidz/antq) or [slipset/deps-ancient](https://github.com/slipset/deps-ancient).
+>
+> If this version isn't to your liking you can still rely on `v1.8.4` (or before) and the old documentation in `README-v1.md`.
+
 Find newer versions of your dependencies in your `deps.edn` file using the [Clojure CLI][cli]. This works for maven _and_ git dependencies.
 
 ## Usage
@@ -7,11 +13,9 @@ Find newer versions of your dependencies in your `deps.edn` file using the [Cloj
 You can try it out easily with this one liner:
 
 ```bash
-$ clojure -Sdeps '{:deps {olical/depot {:mvn/version "1.8.4"}}}' -m depot.outdated.main
-
-|          Dependency | Current | Latest |
-|---------------------|---------|--------|
-| org.clojure/clojure |   1.9.0 | 1.10.0 |
+$ clojure -Sdeps '{:deps {olical/depot {:mvn/version "2.0.0"}}}' -m depot.outdated.main
+Checking for old versions in: deps.edn
+  org.clojure/clojure {:mvn/version "1.9.0"} -> {:mvn/version "1.10.1"}
 ```
 
 I'd recommend adding depot as an alias in your own `deps.edn` file, this will allow it to check itself for updates:
@@ -25,30 +29,29 @@ I'd recommend adding depot as an alias in your own `deps.edn` file, this will al
 ```
 
 ```bash
-$ clojure -Aoutdated -a outdated
-
-|   Dependency | Current | Latest |
-|--------------|---------|--------|
-| olical/depot |   ..... |  ..... |
+$ clojure -Aoutdated --aliases outdated
+Checking for old versions in: deps.edn
+  olical/depot {:mvn/version "..."} -> {:mvn/version "..."}
 ```
 
-### Updating `deps.edn`
+### Controlling which files are checked
 
-To automatically update the versions in `deps.edn`, use `--update`.
+By default Depot looks for `deps.edn` in the current working directory. You
+can instead pass one or more filenames in explicitly.
 
-```bash
-$ clojure -m depot.outdated.main --update
-Updating: deps.edn
-  rewrite-clj {:mvn/version "0.6.0"} -> {:mvn/version "0.6.1"}
-  cider/cider-nrepl {:mvn/version "0.17.0"} -> {:mvn/version "0.18.0"}
-  clj-time {:mvn/version "0.14.4"} -> {:mvn/version "0.15.1"}
-  olical/cljs-test-runner {:sha "5a18d41648d5c3a64632b5fec07734d32cca7671"} -> {:sha "da9710b389782d4637ef114176f6e741225e16f0"}
+``` bash
+$ clojure -Aoutdated ../my-project/deps.edn
 ```
 
-This will leave any formatting, whitespace, and comments intact. It will update
-both the top level deps and any `:aliases` / `:extra-deps`. To prevent Depot
-from touching certain parts of your `deps.edn`, mark them with the
-`^:depot/ignore` metadata.
+### Controlling which part of the file are checked
+
+By default, only dependencies under the top-level `:deps` are considered.
+
+To also consider `:extra-deps` and `:override-deps` under aliases, see
+the the `--aliases` and `--every` flags.
+
+To prevent Depot from touching certain parts of your `deps.edn`, mark
+them with the `^:depot/ignore` metadata.
 
 ``` clojure
 {:deps {...}
@@ -61,27 +64,39 @@ from touching certain parts of your `deps.edn`, mark them with the
                                {org.clojure/clojure {:mvn/version "1.9.0"}}}}}
 ```
 
-`--update` by default looks for `deps.edn` in the current working directory. You
-can instead pass one or more filenames in explicitly.
+The metadata can be placed on the artifact name, the coord map or on
+any map containing the dependency in question.
 
-``` bash
-$ clojure -m depot.outdated.main --update ../my-project/deps.edn
+### Updating `deps.edn`
+
+By default, depot only prints the new versions. To update the file in
+place, include the `--write` flag. This will leave any formatting,
+whitespace, and comments intact.
+
+```bash
+$ clojure -Aoutdated --write
+Updating old versions in: deps.edn
+  rewrite-clj {:mvn/version "0.6.0"} -> {:mvn/version "0.6.1"}
+  cider/cider-nrepl {:mvn/version "0.17.0"} -> {:mvn/version "0.18.0"}
+  clj-time {:mvn/version "0.14.4"} -> {:mvn/version "0.15.1"}
+  olical/cljs-test-runner {:sha "5a18d41648d5c3a64632b5fec07734d32cca7671"} -> {:sha "da9710b389782d4637ef114176f6e741225e16f0"}
 ```
 
-## Freezing snapshots
+
+### Freezing snapshots
 
 Maven has a concept called "virtual" versions, these are similar to Git branches, they are pointers to another version, and the version they point to can change over time. The best known example are snapshot releases. When your `deps.edn` refers to a version `0.4.1-SNAPSHOT`, the version that actually gets installed will look like `0.4.1-20190222.154954-1`.
 
 A maintainer can publish as many snapshots as they like, all with the same version string. This means that re-running the same code twice might yield different results, if in the meanwhile a new snapshot was released. So installing `0.4.1-SNAPSHOT` again later on may install a completely different version.
 
-For the sake of stability and reproducibility it may be desirable to "lock" this version. This is what the `--resolve-virtual` flag is for. The `--resolve-virtual` flag will replace the snapshot version with the current timestamped version that the SNAPSHOT is an alias of, so that your code is once again deterministic.
+For the sake of stability and reproducibility it may be desirable to "lock" this version. This is what the `--resolve-virtual` flag is for. The `--resolve-virtual` flag will resolve the virtual version to the current timestamped version that the SNAPSHOT is an alias of, so that your code is once again deterministic.
 
 Besides `SNAPSHOT` versions `--resolve-virtual` will also handle the special version strings `"RELEASE"` and `"LATEST"`
 
 ```
-% clojure -Sdeps '{:deps {olical/depot {:local/root "/home/arne/github/depot"}}}' -m depot.outdated.main --resolve-virtual
-Resolving: deps.edn
-   cider/piggieback 0.4.1-SNAPSHOT --> 0.4.1-20190222.154954-1
+% clojure -Aoutdated --resolve-virtual
+Checking virtual versions in: deps.edn
+   cider/piggieback {:mvn/version "0.4.1-SNAPSHOT"} -> {:mvn/version "0.4.1-20190222.154954-1"}
 ```
 
 ## Existing work

@@ -1,6 +1,6 @@
 # Depot changes
 
-## v2.0.0 (unreleased)
+## v2.0.0
 
  * **Breaking** Replaced the `--update` flag with the `--write` flag.
  * **Breaking** Changed scoping rules to be the same with or without the `--write` flag
