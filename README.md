@@ -1,6 +1,6 @@
 # Depot [![Clojars Project](https://img.shields.io/clojars/v/olical/depot.svg)](https://clojars.org/olical/depot)
 
-> Warning: I'm not actively maintaining this project, I'm finally releasing `v2.0.0` since it's been sitting around for far too long. It contains a bunch of breaking changes that are mentioned in `CHANGES.md`.
+> Warning: I'm not actively maintaining this project, I'm finally releasing `v2+` since it's been sitting around for far too long. It contains a bunch of breaking changes that are mentioned in `CHANGES.md`.
 >
 > You may have better luck with [liquidz/antq](https://github.com/liquidz/antq) or [slipset/deps-ancient](https://github.com/slipset/deps-ancient). If you'd like to see this project developed and maintained further I'm open to inviting other maintainers or promoting forks. I'm reluctant to transfer ownership and publishing rights to the artifact since that's been used for malicious purposes in recent times.
 >
@@ -13,7 +13,7 @@ Find newer versions of your dependencies in your `deps.edn` file using the [Cloj
 You can try it out easily with this one liner:
 
 ```bash
-$ clojure -Sdeps '{:deps {olical/depot {:mvn/version "2.0.0"}}}' -m depot.outdated.main
+$ clojure -Sdeps '{:deps {olical/depot {:mvn/version "2.0.1"}}}' -m depot.outdated.main
 Checking for old versions in: deps.edn
   org.clojure/clojure {:mvn/version "1.9.0"} -> {:mvn/version "1.10.1"}
 ```

@@ -1,5 +1,9 @@
 # Depot changes
 
+## v2.0.1
+
+ * Fix `pom.xml`, there was no source code in `v2.0.0`.
+
 ## v2.0.0
 
  * **Breaking** Replaced the `--update` flag with the `--write` flag.
