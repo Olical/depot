@@ -113,6 +113,7 @@ This project is inspired by [lein-ancient][], it relies on [version-clj][] (by t
  * [@robert-stuttaford](https://github.com/robert-stuttaford) - Presenting results in a neat table.
  * [@seancorfield](https://github.com/seancorfield) - Support for `:override-deps`.
  * [@dharrigan](https://github.com/dharrigan) - Bump dependencies, fixing warnings.
+ * [@dotemacs](https://github.com/dotemacs) - Updating dependencies, supporting newer `tools.deps.alpha` versions.
 
 ## Unlicenced
 
