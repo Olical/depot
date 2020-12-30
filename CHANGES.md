@@ -1,5 +1,9 @@
 # Depot changes
 
+## v2.1.0
+
+ * Merge [#47](https://github.com/Olical/depot/pull/47) - Update dependencies, including `tools.deps.alpha` itself.
+
 ## v2.0.1
 
  * Fix `pom.xml`, there was no source code in `v2.0.0`.
