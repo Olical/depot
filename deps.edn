@@ -2,10 +2,10 @@
 
  :deps
  {org.clojure/clojure {:mvn/version "1.10.1"}
-  org.clojure/tools.deps.alpha {:mvn/version "0.8.677"}
+  org.clojure/tools.deps.alpha {:mvn/version "0.9.857"}
   org.clojure/tools.cli {:mvn/version "1.0.194"}
-  rewrite-clj {:mvn/version "0.6.1"}
-  version-clj {:mvn/version "0.1.2"}}
+  rewrite-clj/rewrite-clj {:mvn/version "0.6.1"}
+  version-clj/version-clj {:mvn/version "0.1.2"}}
 
  :aliases
  {:cider
@@ -20,8 +20,8 @@
   :test
   {:extra-deps {;; Only here to check depot functionality.
                 org.slf4j/slf4j-simple {:mvn/version "1.7.30"}
-                clj-time {:mvn/version "0.15.2"}
-                cider/cider-nrepl {:mvn/version "0.22.0"}
+                clj-time/clj-time {:mvn/version "0.15.2"}
+                cider/cider-nrepl {:mvn/version "0.25.5"}
                 olical/cljs-test-runner {:git/url "https://github.com/Olical/cljs-test-runner.git"
                                          :sha "5a18d41648d5c3a64632b5fec07734d32cca7671"}
 

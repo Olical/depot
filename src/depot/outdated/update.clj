@@ -1,5 +1,5 @@
 (ns depot.outdated.update
-  (:require [clojure.tools.deps.alpha.reader :as reader]
+  (:require [clojure.tools.deps.alpha :as deps.alpha]
             [depot.zip :as dzip]
             [rewrite-clj.zip :as rzip]))
 
@@ -77,7 +77,8 @@
   [file consider-types include-alias? write? messages new-versions]
   (let [start-message ((if write? :start-write :start-read-only) messages)]
     (printf (str start-message "\n") file))
-  (let [deps (reader/read-deps (reader/default-deps))
+  (let [{:keys [root-edn user-edn project-edn]} (deps.alpha/find-edn-maps)
+        deps (deps.alpha/merge-edns [root-edn user-edn project-edn])
         config (-> deps
                    (select-keys [:mvn/repos :mvn/local-repo])
                    (assoc :consider-types consider-types))
