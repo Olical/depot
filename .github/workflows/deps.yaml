@@ -20,7 +20,7 @@ jobs:
           cli: '1.10.1.763'
       - name: check for outdated dependencies
         id: deps
-        run: if [ ! clojure -M:outdated --fail ]; then echo ::set-output name=status::failure; else echo ::set-output name=status::success; fi
+        run: if [ ! $(clojure -M:outdated --fail) ]; then echo ::set-output name=status::failure; else echo ::set-output name=status::success; fi
       - if: ${{ steps.deps.outputs.status == 'failure' }}
         name: Update stale dependencies
         run: clojure -M:outdated --write
