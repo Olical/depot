@@ -1,9 +1,8 @@
-name: dogfood
+name: deps
 on:
   schedule:
     - cron: "29 7 * * *"
   workflow_dispatch:
-  push:
 
 jobs:
   dependencies:
