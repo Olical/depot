@@ -26,4 +26,6 @@
                                          :sha "5a18d41648d5c3a64632b5fec07734d32cca7671"}
 
                 ;; Actually here to run tests.
-                lambdaisland/kaocha {:mvn/version "1.0.632"}}}}}
+                lambdaisland/kaocha {:mvn/version "1.0.632"}}}
+  :outdated {:replace-deps {olical/depot {:mvn/version "RELEASE"}}
+             :main-opts ["-m" "depot.outdated.main"]}}}
