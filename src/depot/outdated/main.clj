@@ -26,6 +26,7 @@
    ["-e" "--every" "Expand search to all aliases."]
    ["-w" "--write" "Instead of just printing changes, write them back to the file."]
    ["-r" "--resolve-virtual" "Convert -SNAPSHOT/RELEASE/LATEST versions into immutable references."]
+   ["-f" "--fail" "Return a non-zero exit status if anything was out of date."]
    ["-h" "--help"]])
 
 (def ^:private messages
@@ -36,8 +37,12 @@
                 :start-write "Updating old versions in: %s"
                 :no-changes "  All up to date!"}})
 
+(defn- exit [code]
+  (shutdown-agents)
+  (System/exit code))
+
 (defn -main [& args]
-  (let [{{:keys [aliases consider-types every help write resolve-virtual]} :options
+  (let [{{:keys [aliases consider-types every help write resolve-virtual fail]} :options
          files :arguments
          summary :summary} (cli/parse-opts args cli-options)]
     (cond
@@ -58,7 +63,12 @@
                            depot/newer-versions)]
         (when (and every aliases)
           (println "--every and --aliases are mutually exclusive.")
-          (System/exit 1))
-        (run! #(update/apply-new-versions % consider-types check-alias? write messages new-versions)
-              files)))
-    (shutdown-agents)))
+          (exit 1))
+        (let [application-results
+              (mapv #(update/apply-new-versions
+                       % consider-types check-alias?
+                       write messages new-versions)
+                    files)]
+          (when (and fail (some :newer-deps? application-results))
+            (exit 1)))))
+    (exit 0)))

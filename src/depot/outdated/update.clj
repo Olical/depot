@@ -89,11 +89,15 @@
                      (apply-top-level-deps (partial apply-new-version new-versions))
                      (apply-aliases-deps include-alias?
                                          (partial apply-new-version new-versions)))
-        new-deps (rzip/root-string loc')]
+        new-deps (rzip/root-string loc')
+        newer-deps? (not= old-deps new-deps)]
+
     (when (and loc' new-deps) ;; defensive check to prevent writing an empty deps.edn
-      (if (= old-deps new-deps)
-        (println (:no-changes messages))
+      (if newer-deps?
         (try
           (when write? (spit file new-deps))
           (catch java.io.FileNotFoundException e
-            (println "  [ERROR] Permission denied: " file)))))))
+            (println "  [ERROR] Permission denied: " file)))
+        (println (:no-changes messages))))
+
+    {:newer-deps? newer-deps?}))
