@@ -21,7 +21,7 @@ jobs:
       - name: check for outdated dependencies
         id: deps
         run: |
-          echo 'Scheduled outdated dependency check:' >> outdated.md
+          echo 'Scheduled outdated dependency check:' > outdated.md
           echo '```clojure' >> outdated.md
           clojure -M:outdated >> outdated.md
           echo '```' >> outdated.md
