@@ -1,5 +1,10 @@
 # Depot changes
 
+## v2.2.0
+
+ * Add a `--fail` flag that will cause the program to exit with code `1` (non-zero) if something was out of date. Useful for CI. [#39](https://github.com/Olical/depot/issues/39)
+ * Updated all dependencies.
+
 ## v2.1.0
 
  * Merge [#47](https://github.com/Olical/depot/pull/47) - Update dependencies, including `tools.deps.alpha` itself.
