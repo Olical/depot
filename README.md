@@ -13,7 +13,7 @@ Find newer versions of your dependencies in your `deps.edn` file using the [Cloj
 You can try it out easily with this one liner:
 
 ```bash
-$ clojure -Sdeps '{:deps {olical/depot {:mvn/version "RELEASE"}}}' -m depot.outdated.main
+$ clojure -Sdeps '{:deps {olical/depot {:mvn/version "RELEASE"}}}' -M -m depot.outdated.main
 Checking for old versions in: deps.edn
   org.clojure/clojure {:mvn/version "1.9.0"} -> {:mvn/version "1.10.1"}
 ```
