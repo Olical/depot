@@ -13,7 +13,7 @@
     (.getVersion (.resolveVersion system session request))))
 
 (defn pinned-versions
-  "Find all deps in a `:deps` or `:extra-deps` or `:override-deps` map to be pinned,
+  "Find all deps in a `:deps` or `:default-deps` or `:extra-deps` or `:override-deps` map to be pinned,
   at the top level and in aliases.
 
   `loc` points at the top level map."
