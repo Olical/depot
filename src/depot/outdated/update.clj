@@ -53,6 +53,7 @@
 (defn- apply-alias-deps
   [loc f]
   (-> loc
+      (apply-to-deps-map :default-deps f)
       (apply-to-deps-map :extra-deps f)
       (apply-to-deps-map :override-deps f)))
 
