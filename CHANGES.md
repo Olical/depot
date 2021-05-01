@@ -1,5 +1,9 @@
 # Depot changes
 
+## v2.3.0
+
+ * Merge [#55](https://github.com/Olical/depot/pull/55) - Adds default-deps to keys checked for aliases. Thank you, [@timothypratley](https://github.com/timothypratley)!
+
 ## v2.2.0
 
  * Add a `--fail` flag that will cause the program to exit with code `1` (non-zero) if something was out of date. Useful for CI. [#39](https://github.com/Olical/depot/issues/39)

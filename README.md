@@ -22,7 +22,7 @@ I'd recommend adding depot as an alias in your own `deps.edn` file, this will al
 
 ```clojure
 {:deps {}
- :aliases {:outdated {:replace-deps {olical/depot {:mvn/version "2.2.0"}}
+ :aliases {:outdated {:replace-deps {olical/depot {:mvn/version "2.3.0"}}
                       :main-opts ["-m" "depot.outdated.main"]}}}
 ```
 
@@ -113,6 +113,7 @@ This project is inspired by [lein-ancient][], it relies on [version-clj][] (by t
  * [@seancorfield](https://github.com/seancorfield) - Support for `:override-deps`.
  * [@dharrigan](https://github.com/dharrigan) - Bump dependencies, fixing warnings.
  * [@dotemacs](https://github.com/dotemacs) - Updating dependencies, supporting newer `tools.deps.alpha` versions.
+ * [@timothypratley](https://github.com/timothypratley) - Adding `:default-deps` support.
 
 ## Unlicenced
 

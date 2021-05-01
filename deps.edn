@@ -1,7 +1,7 @@
 {:paths ["src"]
 
  :deps
- {org.clojure/clojure {:mvn/version "1.10.2"}
+ {org.clojure/clojure {:mvn/version "1.10.3"}
   org.clojure/tools.deps.alpha {:mvn/version "0.11.910"}
   org.clojure/tools.cli {:mvn/version "1.0.206"}
   rewrite-clj/rewrite-clj {:mvn/version "0.6.1"}
@@ -11,7 +11,7 @@
  {:cider
   {:extra-paths ["dev"]
    :extra-deps {org.clojure/tools.nrepl {:mvn/version "0.2.13"}
-                cider/cider-nrepl {:mvn/version "0.24.0"}}
+                cider/cider-nrepl {:mvn/version "0.26.0"}}
    :main-opts ["-m" "depot.dev.cider"]}
 
   :prepl
