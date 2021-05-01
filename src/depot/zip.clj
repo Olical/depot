@@ -136,10 +136,10 @@
   (and loc
        (= :token (rzip/tag loc))
        (rzip/map? (rzip/up loc))
-       (#{:deps :extra-deps :override-deps} (some-> loc
-                                                    rzip/up
-                                                    left
-                                                    rzip/sexpr))))
+       (#{:deps :default-deps :extra-deps :override-deps} (some-> loc
+                                                                  rzip/up
+                                                                  left
+                                                                  rzip/sexpr))))
 
 (defn next-lib
   "Find the next loc, depth first, that is a library name."
