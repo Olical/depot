@@ -1,9 +1,9 @@
 (ns depot.outdated
   (:require [clojure.java.shell :as sh]
             [clojure.string :as str]
-            [clojure.tools.deps.alpha] ;; need for multimethods
-            [clojure.tools.deps.alpha.extensions :as ext]
-            [clojure.tools.deps.alpha.util.maven :as maven]
+            [clojure.tools.deps.extensions :as ext]
+            [clojure.tools.deps.util.maven :as maven]
+            [clojure.tools.deps.extensions.git :as git]
             [depot.zip :as dzip]
             [version-clj.core :as version])
   (:import org.apache.maven.repository.internal.MavenRepositorySystemUtils
@@ -86,12 +86,13 @@
           lines)))
 
 (defn with-git-url
-  "Add a :git/url key to coords if artifact is a GitHub artifact."
+  "Add a :git/url key to coords if artifact is a Git dependency.
+   Details: https://clojure.org/reference/deps_edn#deps_git"
   [artifact coords]
   (if (and (contains? coords :git/sha)
            (not (contains? coords :git/url)))
-    (if-let [[_ repo-name] (re-find #"io\.github\.(.*)" (str artifact))]
-      (assoc coords :git/url (str "https://github.com/" repo-name))
+    (if-let [git-url (git/auto-git-url artifact)]
+      (assoc coords :git/url git-url)
       coords)
     coords))
 
