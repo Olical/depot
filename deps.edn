@@ -23,7 +23,7 @@
                 clj-time/clj-time {:mvn/version "0.15.2"}
                 cider/cider-nrepl {:mvn/version "0.57.0"}
                 olical/cljs-test-runner {:git/url "https://github.com/Olical/cljs-test-runner.git"
-                                         :sha "5a18d41648d5c3a64632b5fec07734d32cca7671"}
+                                         :git/sha "5a18d41648d5c3a64632b5fec07734d32cca7671"}
 
                 ;; Actually here to run tests.
                 lambdaisland/kaocha {:mvn/version "1.91.1392"}}}
