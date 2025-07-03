@@ -85,14 +85,30 @@
             (filter #(= 2 (count %))))
           lines)))
 
+(defn with-git-url
+  "Add a :git/url key to coords if artifact is a GitHub artifact."
+  [artifact coords]
+  (if (and (contains? coords :git/sha)
+           (not (contains? coords :git/url)))
+    (if-let [[_ repo-name] (re-find #"io\.github\.(.*)" (str artifact))]
+      (assoc coords :git/url (str "https://github.com/" repo-name))
+      coords)
+    coords))
+
+(comment
+  (with-git-url 'io.github.olical/depot {:git/tag "v2.2.0" :git/sha "f4806e4"})
+  ;; =>
+  #:git{:tag "v2.2.0", :sha "f4806e4", :url "https://github.com/olical/depot"})
+
 (defmethod -current-latest-map :git
   [lib coord _]
-  (let [{:keys [exit out]} (sh/sh "git" "ls-remote" (:git/url coord))
+  (let [coord (with-git-url lib coord)
+        {:keys [exit out]} (sh/sh "git" "ls-remote" (:git/url coord))
         latest-remote-sha (get (parse-git-ls-remote out) "HEAD")]
     (when (and (= exit 0)
                (neg? (ext/compare-versions
-                       lib coord (assoc coord :sha latest-remote-sha) {})))
-      {:current (:sha coord)
+                      lib coord (assoc coord :git/sha latest-remote-sha) {})))
+      {:current (:git/sha coord)
        :latest  latest-remote-sha})))
 
 (defn current-latest-map
@@ -112,7 +128,7 @@
    (fn [artifact coords]
      (let [[old-version version-key]
            (or (some-> coords :mvn/version (vector :mvn/version))
-               (some-> coords :sha (vector :sha)))
+               (some-> coords :git/sha (vector :git/sha)))
            new-version (-> (current-latest-map artifact
                                                      coords
                                                      config)
