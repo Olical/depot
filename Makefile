@@ -11,4 +11,4 @@ test:
 
 pom:
 	clojure -Srepro -Spom
-	xmlformat pom.xml -i
+	xmllint --format pom.xml --output pom.xml
