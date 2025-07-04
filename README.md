@@ -15,14 +15,14 @@ You can try it out easily with this one liner:
 ```bash
 $ clojure -Sdeps '{:deps {olical/depot {:mvn/version "RELEASE"}}}' -M -m depot.outdated.main
 Checking for old versions in: deps.edn
-  org.clojure/clojure {:mvn/version "1.9.0"} -> {:mvn/version "1.10.1"}
+  org.clojure/clojure {:mvn/version "1.9.0"} -> {:mvn/version "1.12.1"}
 ```
 
 I'd recommend adding depot as an alias in your own `deps.edn` file, this will allow it to check itself for updates:
 
 ```clojure
 {:deps {}
- :aliases {:outdated {:replace-deps {olical/depot {:mvn/version "2.3.0"}}
+ :aliases {:outdated {:replace-deps {olical/depot {:mvn/version "2.4.0"}}
                       :main-opts ["-m" "depot.outdated.main"]}}}
 ```
 
@@ -37,7 +37,7 @@ Checking for old versions in: deps.edn
 By default Depot looks for `deps.edn` in the current working directory. You
 can instead pass one or more filenames in explicitly.
 
-``` bash
+```bash
 $ clojure -Aoutdated ../my-project/deps.edn
 ```
 
@@ -52,7 +52,7 @@ or the `--every` flag to consider all aliases.
 To prevent Depot from touching certain parts of your `deps.edn`, mark
 them with the `^:depot/ignore` metadata.
 
-``` clojure
+```clojure
 {:deps {...}
 
  :aliases
@@ -81,7 +81,6 @@ Updating old versions in: deps.edn
   olical/cljs-test-runner {:git/sha "5a18d41648d5c3a64632b5fec07734d32cca7671"} -> {:git/sha "da9710b389782d4637ef114176f6e741225e16f0"}
 ```
 
-
 ### Freezing snapshots
 
 Maven has a concept called "virtual" versions, these are similar to Git branches, they are pointers to another version, and the version they point to can change over time. The best known example are snapshot releases. When your `deps.edn` refers to a version `0.4.1-SNAPSHOT`, the version that actually gets installed will look like `0.4.1-20190222.154954-1`.
@@ -104,24 +103,24 @@ This project is inspired by [lein-ancient][], it relies on [version-clj][] (by t
 
 ## Contributors
 
- * [@Olical](https://github.com/Olical) - Initial work and general maintenance.
- * [@daaku](https://github.com/daaku) - Ensuring `:override-deps` is adhered to in the non-mutating mode.
- * [@kennyjwilli](https://github.com/kennyjwilli) - Git dependency support and table improvements.
- * [@lverns](https://github.com/lverns) - Reducing the runtime significantly by making multiple requests in parallel.
- * [@plexus](https://github.com/plexus) - Both the `--update` and `--resolve-virtual` systems, so many improvements!
- * [@robert-stuttaford](https://github.com/robert-stuttaford) - Presenting results in a neat table.
- * [@seancorfield](https://github.com/seancorfield) - Support for `:override-deps`.
- * [@dharrigan](https://github.com/dharrigan) - Bump dependencies, fixing warnings.
- * [@dotemacs](https://github.com/dotemacs) - Updating dependencies, supporting newer `tools.deps.alpha` versions.
- * [@timothypratley](https://github.com/timothypratley) - Adding `:default-deps` support.
+- [@Olical](https://github.com/Olical) - Initial work and general maintenance.
+- [@daaku](https://github.com/daaku) - Ensuring `:override-deps` is adhered to in the non-mutating mode.
+- [@kennyjwilli](https://github.com/kennyjwilli) - Git dependency support and table improvements.
+- [@lverns](https://github.com/lverns) - Reducing the runtime significantly by making multiple requests in parallel.
+- [@plexus](https://github.com/plexus) - Both the `--update` and `--resolve-virtual` systems, so many improvements!
+- [@robert-stuttaford](https://github.com/robert-stuttaford) - Presenting results in a neat table.
+- [@seancorfield](https://github.com/seancorfield) - Support for `:override-deps`.
+- [@dharrigan](https://github.com/dharrigan) - Bump dependencies, fixing warnings.
+- [@dotemacs](https://github.com/dotemacs) - Updating dependencies, supporting newer `tools.deps.alpha` versions.
+- [@timothypratley](https://github.com/timothypratley) - Adding `:default-deps` support.
 
 ## Unlicenced
 
 Find the full [unlicense][] in the `UNLICENSE` file, but here's a snippet.
 
->This is free and unencumbered software released into the public domain.
+> This is free and unencumbered software released into the public domain.
 >
->Anyone is free to copy, modify, publish, use, compile, sell, or distribute this software, either in source code form or as a compiled binary, for any purpose, commercial or non-commercial, and by any means.
+> Anyone is free to copy, modify, publish, use, compile, sell, or distribute this software, either in source code form or as a compiled binary, for any purpose, commercial or non-commercial, and by any means.
 
 Do what you want. Learn as much as you can. Unlicense more software.
 
