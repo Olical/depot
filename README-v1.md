@@ -42,7 +42,7 @@ Updating: deps.edn
   rewrite-clj {:mvn/version "0.6.0"} -> {:mvn/version "0.6.1"}
   cider/cider-nrepl {:mvn/version "0.17.0"} -> {:mvn/version "0.18.0"}
   clj-time {:mvn/version "0.14.4"} -> {:mvn/version "0.15.1"}
-  olical/cljs-test-runner {:sha "5a18d41648d5c3a64632b5fec07734d32cca7671"} -> {:sha "da9710b389782d4637ef114176f6e741225e16f0"}
+  olical/cljs-test-runner {:git/sha "5a18d41648d5c3a64632b5fec07734d32cca7671"} -> {:git/sha "da9710b389782d4637ef114176f6e741225e16f0"}
 ```
 
 This will leave any formatting, whitespace, and comments intact. It will update

@@ -82,7 +82,7 @@
                         left
                         zip/lefts
                         reverse
-                        (take-while rewrite-clj.node/whitespace?)
+                        (take-while rewrite-clj.reader/whitespace?)
                         reverse)
           ;; copy the whitespace nodes into the end of the map
           loc (reduce (fn [loc node]

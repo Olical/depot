@@ -1,7 +1,7 @@
 (ns depot.outdated.resolve-virtual
   (:require [depot.zip :as dzip]
             [depot.outdated :as outdated]
-            [clojure.tools.deps.alpha.util.maven :as maven]
+            [clojure.tools.deps.util.maven :as maven]
             [clojure.string :as str]))
 
 (defn resolve-version [lib coord {:keys [mvn/repos mvn/local-repo]}]

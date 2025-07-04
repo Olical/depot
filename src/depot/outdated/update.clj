@@ -1,5 +1,5 @@
 (ns depot.outdated.update
-  (:require [clojure.tools.deps.alpha :as deps.alpha]
+  (:require [clojure.tools.deps :as deps.alpha]
             [depot.zip :as dzip]
             [rewrite-clj.zip :as rzip]))
 
