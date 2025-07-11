@@ -6,7 +6,7 @@
 
 ;; TODO Use the GitHub rev / tag
 ;; https://github.com/jlesquembre/clojars-publish-action/blob/89a4eb7bdbe1270621e6643250afce152701699e/src/entrypoint.clj#L41-L47
-(def version "2.4.0") ; (b/git-count-revs nil)
+(def version "2.4.1") ; (b/git-count-revs nil)
 
 (def class-dir "target/classes")
 (def jar-file (format "target/%s-%s.jar" (name lib) version))
