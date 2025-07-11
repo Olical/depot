@@ -66,8 +66,8 @@
           (exit 1))
         (let [application-results
               (mapv #(update/apply-new-versions
-                       % consider-types check-alias?
-                       write messages new-versions)
+                      % consider-types check-alias?
+                      write messages new-versions)
                     files)]
           (when (and fail (some :newer-deps? application-results))
             (exit 1)))))

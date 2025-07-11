@@ -76,13 +76,13 @@
                   (str/split #"\n"))]
     (into {}
           (comp
-            (map (fn [x]
-                   (-> x
-                       (str/triml)
-                       (str/split #"\t")
-                       (reverse)
-                       (vec))))
-            (filter #(= 2 (count %))))
+           (map (fn [x]
+                  (-> x
+                      (str/triml)
+                      (str/split #"\t")
+                      (reverse)
+                      (vec))))
+           (filter #(= 2 (count %))))
           lines)))
 
 (defn with-git-url
@@ -131,8 +131,8 @@
            (or (some-> coords :mvn/version (vector :mvn/version))
                (some-> coords :git/sha (vector :git/sha)))
            new-version (-> (current-latest-map artifact
-                                                     coords
-                                                     config)
+                                               coords
+                                               config)
                            (get :latest))]
        (when (and old-version
                   ;; ignore these Maven 2 legacy identifiers

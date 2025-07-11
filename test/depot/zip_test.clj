@@ -91,29 +91,29 @@
            (first loc-seq)))
 
     (is (= (-> loc
-             rzip/down
-             rzip/right
-             rzip/right
-             rzip/right
-             rzip/down
-             rzip/right
-             rzip/down
-             rzip/right
-             rzip/down)
-         (second loc-seq)))))
+               rzip/down
+               rzip/right
+               rzip/right
+               rzip/right
+               rzip/down
+               rzip/right
+               rzip/down
+               rzip/right
+               rzip/down)
+           (second loc-seq)))))
 
 (deftest ignore-loc?-test
   (testing "don't update when tagged with :depot/ignore"
     (is (true? (u/ignore-loc?
-                 (rzip/find-value (rzip/of-string "{:aliases {:dev ^:depot/ignore {:deps {foo/bar {}}}}} :test {:deps {baz/baq {}}}")
-                                  rzip/next
-                                  'foo/bar)))))
+                (rzip/find-value (rzip/of-string "{:aliases {:dev ^:depot/ignore {:deps {foo/bar {}}}}} :test {:deps {baz/baq {}}}")
+                                 rzip/next
+                                 'foo/bar)))))
 
   (testing "do update by default"
     (is (false? (u/ignore-loc?
-                (rzip/find-value (rzip/of-string "{:aliases {:dev ^:depot/ignore {:deps {foo/bar {}}}}} :test {:deps {baz/baq {}}}")
-                                 rzip/next
-                                 'baz/baq))))))
+                 (rzip/find-value (rzip/of-string "{:aliases {:dev ^:depot/ignore {:deps {foo/bar {}}}}} :test {:deps {baz/baq {}}}")
+                                  rzip/next
+                                  'baz/baq))))))
 
 (deftest mapped-libs-test
   (let [loc (rzip/edn
