@@ -69,7 +69,7 @@
                (u/zassoc :baz 123)
                rzip/root-string)))
 
-    (is (= "{:foo :bar,\n :baz :baq,\n :baq 123}"
+    (is (= "{:foo :bar,\n :baz :baq :baq 123}"
            (-> loc
                (u/zassoc :baq 123)
                rzip/root-string)))))

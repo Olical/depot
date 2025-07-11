@@ -1,7 +1,6 @@
 (ns depot.zip
   "Extra zipper helpers."
-  (:require [rewrite-clj.zip :as rzip]
-            [clojure.zip :as zip]))
+  (:require [rewrite-clj.zip :as rzip]))
 
 (defn- zip-skip-ws
   "Skip whitespace, comments, and uneval nodes."
@@ -75,38 +74,13 @@
 
     ;; key not found, add it to the end of the map
     (let [;; loc to the last value in the map
-          loc (rzip/rightmost (rzip/down loc))
-          ;; whitespace nodes preceding the last key in the map. This way we
-          ;; maintain the same use of commas, newlines, whitespace
-          ws-nodes (->> loc
-                        left
-                        zip/lefts
-                        reverse
-                        (take-while rewrite-clj.reader/whitespace?)
-                        reverse)
-          ;; copy the whitespace nodes into the end of the map
-          loc (reduce (fn [loc node]
-                        (zip/right (zip/insert-right loc node)))
-                      loc
-                      ws-nodes)]
+          loc (rzip/rightmost (rzip/down loc))]
       ;; insert key and value
       (-> loc
           (rzip/insert-right k)
           (rzip/right)
           (rzip/insert-right v)
           (rzip/up)))))
-
-(defn map-vals
-  "Like [[rewrite-clj.zip/map-vals]], but account for uneval nodes, and can take extra args."
-  [f loc & args]
-  (let [loc' (rzip/down loc)]
-    (if loc'
-      (loop [keyloc loc']
-        (let [valloc (apply f (right keyloc) args)]
-          (if-let [next-keyloc (right valloc)]
-            (recur next-keyloc)
-            (rzip/up valloc))))
-      loc)))
 
 (defn map-keys
   "Like [[rewrite-clj.zip/map-keys]], but account for uneval nodes."
@@ -160,23 +134,6 @@
   [loc]
   [(rzip/sexpr loc)
    (rzip/sexpr (right loc))])
-
-(defn lib-seq
-  "A sequence of all libraries in the given zipper over deps.edn, returning a seq
-  of [name, coordinate-map] pairs."
-  [loc]
-  (map loc->lib (lib-loc-seq loc)))
-
-(defn transform-libs
-  "Transform all coordinate maps in the given zipper over deps.edn. The function f
-  takes a loc pointing at the library name, and returns a new loc."
-  [loc f & args]
-  (loop [loc loc
-         loc' (next-lib loc)]
-    (if loc'
-      (let [loc (-> (apply f loc' args) znext)]
-        (recur loc (next-lib loc)))
-      loc)))
 
 (defn mapped-libs
   "Find every unignored dep in a `:deps` or `:extra-deps` or `:override-deps` map, at
