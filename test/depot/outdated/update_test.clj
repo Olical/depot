@@ -3,7 +3,7 @@
             [depot.outdated.update :as u]
             [rewrite-clj.node :as node]
             [rewrite-clj.zip :as rzip]
-            [clojure.tools.deps.alpha.util.maven :as maven]))
+            [clojure.tools.deps.util.maven :as maven]))
 
 (def CONSIDER_TYPES_RELEASES #{:release})
 

@@ -2,7 +2,7 @@
   (:require [depot.outdated.resolve-virtual :as r]
             [clojure.test :refer :all]
             [rewrite-clj.zip :as rzip]
-            [clojure.tools.deps.alpha.util.maven :as maven]
+            [clojure.tools.deps.util.maven :as maven]
             [clojure.string :as str]
             [depot.zip :as dzip]))
 
