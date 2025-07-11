@@ -22,7 +22,7 @@ I'd recommend adding depot as an alias in your own `deps.edn` file, this will al
 
 ```clojure
 {:deps {}
- :aliases {:outdated {:replace-deps {olical/depot {:mvn/version "2.4.0"}}
+ :aliases {:outdated {:replace-deps {olical/depot {:mvn/version "2.4.1"}}
                       :main-opts ["-m" "depot.outdated.main"]}}}
 ```
 

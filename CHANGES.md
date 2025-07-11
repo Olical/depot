@@ -1,5 +1,9 @@
 # Depot changes
 
+## v2.4.1
+
+Fix tests and some compatibility issues around [rewrite-clj](https://github.com/clj-commons/rewrite-clj) v1 and whitespace.
+
 ## v2.4.0
 
 - Merge [#56](https://github.com/Olical/depot/pull/56) - Update deps version && add `:git/url` for git repo. Thank you, [@JackSho](https://github.com/JackSho)!
