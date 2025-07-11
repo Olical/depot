@@ -1,0 +1,29 @@
+[tools]
+clojure = "1.12.1"
+java = "temurin-21.0.6+7.0.LTS"
+
+[tasks.format]
+run = "clojure -M:format"
+
+[tasks.test]
+description = "Run the test suite with Kaocha."
+raw = true
+run = "clojure -M:dev:test"
+
+[tasks.dogfood]
+description = "Run depot on itself (well, the example-outdated-deps-for-self-test alias)"
+run = "clojure -Aexample-outdated-deps-for-self-test -m depot.outdated.main -a example-outdated-deps-for-self-test -t release,qualified"
+
+[tasks.repl]
+description = "Start an nREPL with Flowstorm configured."
+raw = true
+run = "clojure -M:test:dev:flowstorm"
+
+[tasks.build]
+run = "clojure -T:build jar"
+
+[tasks.clean]
+run = "clojure -T:build clean"
+
+[tasks.deploy]
+run = "clojure -T:build deploy"
